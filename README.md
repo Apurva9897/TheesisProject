@@ -18,22 +18,41 @@ By implementing the Stock Control System, businesses can streamline inventory pr
 [comment]: # (You can add as many additional bullet points as necessary by adding an additional hyphon symbol '-' at the end of each list) 
 
 Essential:
-- [Essential requirement 1]
-- [Essential requirement 2]
-- [Essential requirement 3]
-- [Essential requirement *n*]
+- Essential requirement 1
+1. A centralized inventory management system to track stock levels of computer components.
+- Essential requirement 2
+2. Real-time stock movement and location tracking.
+- Essential requirement 3
+3. Automated low-stock alerts and notifications
+- Essential requirement 4
+4. Role-based user authentication and access control.
+- Essential requirement 5
+5.	Reporting and data visualization tools for inventory analysis.
+- Essential requirement 6
+6.	Invoicing system for sales and purchases.
+- Essential requirement 7
+7.	Secure database storage and backup solutions.
+
 
 Desirable:
-- [Desirable requirement 1]
-- [Desirable requirement 2]
-- [Desirable requirement 3]
-- [Desirable requirement *n*]
+- Desirable requirement 1
+1.Barcode/QR code scanning for easier stock tracking.
+- Desirable requirement 2
+2.AI-based demand forecasting for stock replenishment
+- Desirable requirement 3
+3.Warehouse mapping and visualization tools.
+- Desirable requirement 4
+4.Integration with third-party accounting and ERP systems.
 
 Optional:
-- [Optional requirement 1]
-- [Optional requirement 2]
-- [Optional requirement 3]
-- [Optional requirement *n*]
+- Optional requirement 1
+1.AI-powered chatbot assistance for customer support
+- Optional requirement 2
+2.Voice-command stock retrieval system.
+- Optional requirement 3
+3.Mobile application for stock management on the go.
+- Optional requirement 4
+4.Multi-language support for international usability.
 
 
 ## Information about this repository

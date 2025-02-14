@@ -19,20 +19,25 @@ By implementing the Stock Control System, businesses can streamline inventory pr
 [comment]: # (You can add as many additional bullet points as necessary by adding an additional hyphon symbol '-' at the end of each list) 
 
 Essential:
-- Essential requirement 1
-1. A centralized inventory management system to track stock levels of computer components.
-- Essential requirement 2
-2. Real-time stock movement and location tracking.
-- Essential requirement 3
-3. Automated low-stock alerts and notifications
-- Essential requirement 4
-4. Role-based user authentication and access control.
-- Essential requirement 5
-5.	Reporting and data visualization tools for inventory analysis.
-- Essential requirement 6
-6.	Invoicing system for sales and purchases.
-- Essential requirement 7
-7.	Secure database storage and backup solutions.
+1.	Centralized Inventory Management System: The system allows businesses to track stock levels of computer components in real-time, ensuring accurate stock records. It helps prevent overstocking or stock shortages by dynamically updating inventory as items are added, removed, or relocated.
+
+2.	Real-time Stock Movement and Location Tracking: Each item’s exact location within the warehouse is recorded and updated during the stock assembly process. This ensures efficient stock retrieval and prevents misplacement of inventory. Automated low-stock alerts and notifications.
+
+3.	Automated Low-stock Alerts and Notifications: The system sends alerts when inventory levels reach predefined thresholds, enabling warehouse managers to reorder components before they run out. This minimizes downtime and prevents disruptions in operations.
+
+4.	Role-based User Authentication and Access Control: Different user roles, such as admin, warehouse staff, and finance team, have specific permissions to ensure secure handling of stock data and transactions. Unauthorized access is restricted to maintain system security. Reporting and data visualization tools for inventory analysis.
+
+5.	Reporting and Data Visualization Tools: Users can generate real-time inventory reports, track stock trends, and analyze stock movement history. Reports can be exported in formats like PDF, CSV, or Excel for business insights and audits. Secure database storage and backup solutions.
+
+6. Role-based User Authentication and Access Control: Different user roles, such as admin, warehouse staff, and finance team, have specific permissions to ensure secure handling of stock data and transactions. Unauthorized access is restricted to maintain system security.
+
+7. Reporting and Data Visualization Tools: Users can generate real-time inventory reports, track stock trends, and analyze stock movement history. Reports can be exported in formats like PDF, CSV, or Excel for business insights and audits.
+
+8. Invoicing System for Sales and Purchases: The system generates invoices for stock transactions, maintains records of purchases and sales, and supports different payment methods and tax calculations.
+
+9. Secure Database Storage and Backup Solutions: The system ensures data integrity with encrypted storage and automated backups, preventing data loss and ensuring quick recovery in case of failures.
+
+10. Integration of Computer Services: The system supports additional computer services, including maintenance, system design, software development, software installation, and disaster recovery solutions, making it a comprehensive IT asset management tool.
 
 
 Desirable:

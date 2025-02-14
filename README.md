@@ -7,11 +7,12 @@
 ### Student email: avk7@student.le.ac.uk
 
 ### Project description: 
-*[Add your project description here, these will typically be around 100-150 words long]*
+
 The Stock Control System is a web-based application designed to manage and monitor stock levels of computer components in a computer warehouse. It ensures real-time inventory tracking, optimizes the stock assembly process, and enhances operational efficiency by providing accurate reporting and invoicing features. The system helps warehouse managers prevent stock shortages, reduce excess inventory, and improve overall productivity.
 A key feature of this system is location tracking, which allows precise identification of where each item is stored or moved during stock assembly. Additionally, the system integrates computer services, including computer maintenance, system design, software development, software installation, and disaster recovery services, making it a comprehensive solution for IT asset management.
 The application supports user roles and access control, ensuring secure handling of stock information. With automated alerts, reporting tools, and invoicing capabilities, the system helps businesses maintain financial records and optimize inventory operations. It also provides graphical insights into stock trends, supports multi-user access, and enables cloud-based deployment for scalability.
 By implementing the Stock Control System, businesses can streamline inventory processes, enhance stock visibility, and ensure accurate record-keeping, ultimately improving warehouse efficiency and reducing operational risks.
+
 
 ### List of requirements (objectives): 
 

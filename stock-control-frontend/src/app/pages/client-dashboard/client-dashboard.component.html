@@ -1,3 +1,71 @@
-<div class="container text-center">
-    <h2>Welcome to Client Dashboard</h2>
+<!-- Sidebar Navigation -->
+<div class="dashboard-container">
+  <nav class="sidebar">
+      <h2>COMPANY LOGO</h2>
+      <ul>
+          <li [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">Dashboard</li>
+          <li [class.active]="activeTab === 'place-order'" (click)="setActiveTab('place-order')">Place Order</li>
+          <li [class.active]="activeTab === 'track-order'" (click)="setActiveTab('track-order')">Track Orders</li>
+          <li [class.active]="activeTab === 'order-history'" (click)="setActiveTab('order-history')">Order History</li>
+          <li [class.active]="activeTab === 'help'" (click)="setActiveTab('help')">Help</li>
+      </ul>
+  </nav>
+
+  <!-- Main Dashboard Content -->
+  <div class="content">
+      <h1>Welcome, {{ customerName }}</h1>
+
+      <!-- Dashboard Overview -->
+      <div *ngIf="activeTab === 'dashboard'">
+          <button (click)="setActiveTab('place-order')">Place New Order</button>
+          <button (click)="setActiveTab('track-order')">Track Orders</button>
+          <button (click)="setActiveTab('order-history')">View Order History</button>
+
+          <h2>Current Orders</h2>
+          <table>
+              <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+              </tr>
+              <tr *ngFor="let order of orders">
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.date }}</td>
+                  <td [ngClass]="getStatusClass(order.status)">{{ order.status }}</td>
+                  <td><button (click)="trackOrder(order.id)">View</button></td>
+              </tr>
+          </table>
+      </div>
+
+      <!-- Place Order Section -->
+      <div *ngIf="activeTab === 'place-order'">
+          <h2>Available Products</h2>
+          <ul>
+              <li *ngFor="let product of products">
+                  <span>{{ product.name }} (Stock: {{ product.stock }})</span>
+                  <input type="number" [(ngModel)]="orderQuantities[product.id]" min="0" max="{{ product.stock }}">
+              </li>
+          </ul>
+          <button (click)="placeOrder()">Submit Order</button>
+      </div>
+
+      <!-- Track Orders Section -->
+      <div *ngIf="activeTab === 'track-order'">
+          <h2>Track Your Orders</h2>
+          <p>Coming soon...</p>
+      </div>
+
+      <!-- Order History -->
+      <div *ngIf="activeTab === 'order-history'">
+          <h2>Your Order History</h2>
+          <p>Coming soon...</p>
+      </div>
+
+      <!-- Help Section -->
+      <div *ngIf="activeTab === 'help'">
+          <h2>Need Help?</h2>
+          <p>Contact support at support&#64;example.com</p>
+      </div>
   </div>
+</div>

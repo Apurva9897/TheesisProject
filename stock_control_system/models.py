@@ -15,10 +15,11 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'admin', 'staff', 'client'
 
+    customer = db.relationship('Customer', uselist=False, back_populates='user')
     def __init__(self, username, email, password, role):
         self.username = username
         self.email = email
-        self.set_password(role)
+        self.set_password(password)  # ✅ Fixed incorrect parameter
         self.role = role
 
     def set_password(self, password):
@@ -35,25 +36,32 @@ class Customer(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     phone = db.Column(db.String(20))
     address = db.Column(db.Text)
+    # ✅ Corrected Foreign Key reference
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    # ✅ Corrected Relationship
+    user = db.relationship("User", back_populates="customer", uselist=False)  
+    # ✅ Only one relationship for orders
+    orders = db.relationship('Order', back_populates='customer', lazy=True)  
 
 class Product(db.Model):
     __tablename__ = 'products'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text)
-    price = db.Column(db.Numeric(10, 2), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.DECIMAL(10, 2), nullable=False)
     stock = db.Column(db.Integer, nullable=False)
 
 class Order(db.Model):
     __tablename__ = 'orders'
 
-    id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id', ondelete="CASCADE"), nullable=False)
-    order_date = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default="Pending")
-
-    customer = db.relationship('Customer', backref=db.backref('orders', lazy=True))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)  # Added Foreign Key
+    customer_email = db.Column(db.String(255), nullable=False)
+    product_name = db.Column(db.String(255), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.String(50), default="Pending")
+    customer = db.relationship('Customer', backref='order_list')  # ✅ Renamed to order_list
 
 class OrderDetails(db.Model):
     __tablename__ = 'order_details'

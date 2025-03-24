@@ -45,6 +45,15 @@ def register():
 
     return jsonify({"success": True, "message": "Registration successful"}), 201
 
+    # ✅ If role is 'client', create a Customer entry
+    if role == 'client':
+        new_customer = Customer(user_id=new_user.id, name=username, email=email)
+        db.session.add(new_customer)
+        db.session.commit()
+
+    return jsonify({"success": True, "message": "Registration successful"}), 201
+
+
 @auth_bp.route('/logout')
 @login_required
 def logout():

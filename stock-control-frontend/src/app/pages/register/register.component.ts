@@ -15,6 +15,8 @@ export class RegisterComponent {
   username: string = '';
   email: string = '';
   password: string = '';
+  phone: string = ''; // ✅ Added phone property
+  address: string = ''; // ✅ Added address property
   role: string = 'client'; // Default role is client
   apiUrl: string = 'http://127.0.0.1:5000/auth/register';
 
@@ -23,9 +25,11 @@ export class RegisterComponent {
   onRegister() {
     const userData = {
         username: this.username,
+        role: this.role,
         email: this.email,
         password: this.password,
-        role: this.role
+        phone: this.phone,
+        address: this.address  // Ensure phone field is added in UI
     };
 
     this.http.post(this.apiUrl, userData).subscribe({

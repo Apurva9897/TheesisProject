@@ -1,0 +1,33 @@
+<div class="order-container">
+    <h2>Place New Order</h2>
+  
+    <div class="shipping-info">
+      <h3>Shipping Information</h3>
+      <p><strong>Email:</strong> {{ customerEmail }}</p>
+    </div>
+  
+    <h3>Available Products</h3>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Quantity</th>
+      </tr>
+      <tr *ngFor="let product of products">
+        <td>{{ product.name }}</td>
+        <td>${{ product.price }}</td>
+        <td>{{ product.stock }}</td>
+        <td>
+          <input type="number" [(ngModel)]="product.quantity" min="0" max="{{ product.stock }}" (input)="updateTotal()" />
+        </td>
+      </tr>
+    </table>
+  
+    <div class="order-summary">
+      <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
+      <p><strong>Total:</strong> ${{ totalPrice }}</p>
+      <button class="btn" (click)="onPlaceOrder()">Place Order</button>
+    </div>
+  </div>
+  

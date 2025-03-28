@@ -30,38 +30,78 @@ export class ClientDashboardComponent implements OnInit {
 
   // Fetch Available Products
   getProducts() {
-    this.http.get<any[]>('http://127.0.0.1:5000/customer-dashboard/products')
-      .subscribe(response => {
+    this.http.get<any[]>('http://127.0.0.1:5000/customer_dashboard/products').subscribe({
+      next: (response) => {
         this.products = response;
-      });
+        this.orderQuantities = {};  // Reset selections
+      },
+      error: (error) => {
+        console.error('Error fetching products', error);
+      }
+    });
   }
 
   // Fetch Orders
   getOrders() {
-    this.http.get<any[]>('http://127.0.0.1:5000/customer-dashboard/orders')
-      .subscribe(response => {
-        this.orders = response;
-      });
+    this.http.get<any[]>('http://127.0.0.1:5000/customer_dashboard/orders').subscribe({
+      next: (response) => {
+        this.orders = response.map((order: any) => {
+          const orderDate = new Date(order.date);
+          const daysElapsed = Math.floor((Date.now() - orderDate.getTime()) / (1000 * 3600 * 24));
+          let status = 'Processing';
+          if (daysElapsed >= 4) status = 'Delivered';
+          else if (daysElapsed >= 2) status = 'Shipped';
+          return { ...order, status };
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching orders', error);
+      }
+    });
   }
+
+  customerSummary: any = {};
+
+getCustomerSummary() {
+  this.http.get<any>('http://127.0.0.1:5000/customer_dashboard/summary')
+    .subscribe({
+      next: (response) => {
+        this.customerSummary = response;
+      },
+      error: (error) => {
+        console.error('Failed to fetch summary:', error);
+      }
+    });
+}
 
   // Place Order
   placeOrder() {
-    const selectedItems = Object.entries(this.orderQuantities)
-      .filter(([id, quantity]) => quantity > 0)
-      .map(([id, quantity]) => ({ product_id: id, quantity }));
+    const selectedItems = this.products
+      .filter(product => this.orderQuantities[product.id] > 0)
+      .map(product => ({
+        product_id: product.id,
+        quantity: this.orderQuantities[product.id]
+      }));
 
     if (selectedItems.length === 0) {
-      alert("Please select at least one product.");
+      alert('Please select at least one product.');
       return;
     }
 
-    this.http.post('http://127.0.0.1:5000/customer-dashboard/place-order', { items: selectedItems })
-      .subscribe(response => {
+    const payload = {
+      items: selectedItems
+    };
+
+    this.http.post('http://127.0.0.1:5000/customer_dashboard/place_order', payload).subscribe({
+      next: (response: any) => {
         alert('Order placed successfully!');
-        this.getOrders();  // Refresh orders
-      }, error => {
+        this.getOrders();  // Refresh dashboard
+        this.orderQuantities = {};
+      },
+      error: (error) => {
         alert('Error placing order: ' + error.error.message);
-      });
+      }
+    });
   }
 
   // Track Order
@@ -70,11 +110,12 @@ export class ClientDashboardComponent implements OnInit {
   }
 
   // Get status color class
-  getStatusClass(status: string) {
-    return {
-      'pending': 'status-pending',
-      'processing': 'status-processing',
-      'shipped': 'status-shipped'
-    }[status] || '';
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Delivered': return 'status-delivered';
+      case 'Shipped': return 'status-shipped';
+      case 'Processing': return 'status-processing';
+      default: return '';
+    }
   }
 }

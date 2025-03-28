@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { ClientDashboardComponent } from './pages/client-dashboard/client-dashboard.component';
+import { PlaceOrderComponent } from './pages/place-order/place-order.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
@@ -11,6 +12,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'admin-dashboard', component: AdminDashboardComponent },
     { path: 'client-dashboard', component: ClientDashboardComponent },
+    { path: 'place-order', component: PlaceOrderComponent }
     
 ];
 @NgModule({

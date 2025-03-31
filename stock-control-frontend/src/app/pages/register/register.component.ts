@@ -32,11 +32,15 @@ export class RegisterComponent {
         address: this.address  // Ensure phone field is added in UI
     };
 
+    // ✅ Log the data before sending
+    console.log("🚀 Sending registration data:", userData);
+
     this.http.post(this.apiUrl, userData).subscribe({
         next: (response: any) => {
+            console.log("✅ Registration successful:", response);
+
             if (response.success) {
                 alert('Registration Successful');
-
                 if (this.role === 'admin' || this.role === 'staff') {
                     this.router.navigate(['/company-dashboard']);
                 } else {

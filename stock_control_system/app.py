@@ -8,7 +8,6 @@ from models import db, User
 from routes.auth_routes import auth_bp
 from routes.admin_routes import admin_bp
 from routes.customer_routes import customer_bp
-from routes.register_routes import register_bp
 from routes.customer_dashboard_routes import customer_dashboard_bp
 
 
@@ -38,7 +37,6 @@ def load_user(user_id):
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(customer_bp, url_prefix='/customer')
-app.register_blueprint(register_bp, url_prefix='/register')
 app.register_blueprint(customer_dashboard_bp, url_prefix='/customer_dashboard')
 
 if __name__ == "__main__":

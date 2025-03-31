@@ -1,14 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-place-order',
   templateUrl: './place-order.component.html',
-  styleUrls: ['./place-order.component.css']
+  styleUrls: ['./place-order.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule] // ✅ Import CommonModule & FormsModule
 })
 export class PlaceOrderComponent implements OnInit {
   products: any[] = [];
+  orderQuantities: { [key: number]: number } = {};  // ✅ Fix error
   selectedProducts: any[] = [];
   subtotal: number = 0;
   totalPrice: number = 0;

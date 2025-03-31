@@ -4,6 +4,12 @@
     align-items: center;
     height: 100vh;
     background-color: #f3f3f3;
+    &.bgimage{
+      background-image: url('C:/Users/Apurva Kulkarni/images/warehouse.png');
+      height: 100vh;
+      width: 100%;
+      background-size: cover;
+    }
   }
   
   .login-box {

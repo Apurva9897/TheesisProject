@@ -1,83 +1,87 @@
-<!-- Sidebar Navigation -->
+<!-- Main Dashboard Container -->
 <div class="dashboard-container">
-  <nav class="sidebar">
-      <h2>COMPANY LOGO</h2>
-      <ul>
-          <li [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">Dashboard</li>
-          <li [class.active]="activeTab === 'place-order'" (click)="setActiveTab('place-order')">Place Order</li>
-          <li [class.active]="activeTab === 'track-order'" (click)="setActiveTab('track-order')">Track Orders</li>
-          <li [class.active]="activeTab === 'order-history'" (click)="setActiveTab('order-history')">Order History</li>
-          <li [class.active]="activeTab === 'help'" (click)="setActiveTab('help')">Help</li>
-      </ul>
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-brand">MyShop</div>
+    <div class="navbar-links">
+      <a href="#">My Account</a>
+      <a href="#">Cart</a>
+      <a href="#">Wishlist</a>
+      <a href="#"><i class="fa fa-search"></i> Search</a>
+    </div>
   </nav>
 
-  <!-- Main Dashboard Content -->
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <ul>
+      <li [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">
+        <i class="fa fa-tachometer-alt"></i> Dashboard
+      </li>
+      <li [class.active]="activeTab === 'place-order'" (click)="setActiveTab('place-order')">
+        <i class="fa fa-check-circle"></i> Confirm Order
+      </li>
+      <li [class.active]="activeTab === 'order-history'" (click)="setActiveTab('order-history')">
+        <i class="fa fa-history"></i> Order History
+      </li>
+      <li [class.active]="activeTab === 'help'" (click)="setActiveTab('help')">
+        <i class="fa fa-question-circle"></i> Help
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
   <div class="content">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
       <h1>Welcome, {{ customerName }}</h1>
+    </div>
 
-    <!-- Dashboard Overview -->
+    <!-- Dashboard View -->
     <div *ngIf="activeTab === 'dashboard'">
-        <button (click)="setActiveTab('place-order')">Place New Order</button>
-        <button (click)="setActiveTab('track-order')">Track Orders</button>
-        <button (click)="setActiveTab('order-history')">View Order History</button>
-    
-        <h2>Current Orders</h2>
-        <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            <tr *ngFor="let order of orders">
-                <td>{{ order.id }}</td>
-                <td>{{ order.date }}</td>
-                <td [ngClass]="getStatusClass(order.status)">{{ order.status }}</td>
-                <td><button (click)="trackOrder(order.id)">View</button></td>
-            </tr>
-        </table>
+      <h2 class="section-header">Featured Products</h2>
+      
+      <!-- Products Grid -->
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of featuredProducts">
+          <div class="product-image">
+            <img [src]="'assets/' + product.image" [alt]="product.name">
+          </div>
+          <div class="product-details">
+            <h3>{{ product.name }}</h3>
+            <p class="product-description">{{ product.description }}</p>
+            <p class="product-price">${{ product.price.toFixed(2) }}</p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quantity:</span>
+                <button class="qty-btn" (click)="decrementQuantity(product)">-</button>
+                <input type="number" [(ngModel)]="orderQuantities[product.id]" min="1" max="{{ product.stock }}">
+                <button class="qty-btn" (click)="incrementQuantity(product)">+</button>
+              </div>
+              <button class="add-to-cart-btn" (click)="addToCart(product)">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Right Side Summary -->
-<div class="summary-section">
-    <div class="card">
-      <h3>Account Summary</h3>
-      <p><strong>Account ID:</strong> {{ customerSummary.account_id }}</p>
-      <p><strong>Contact:</strong> {{ customerSummary.name }}</p>
-      <p><strong>Email:</strong> {{ customerSummary.email }}</p>
-      <p><strong>Phone:</strong> {{ customerSummary.phone || 'N/A' }}</p>
-      <button class="btn light">Edit Profile</button>
+    <!-- Other tabs will go here later -->
+    <div *ngIf="activeTab === 'place-order'">
+      <!-- Placeholder for Confirm Order tab (will be implemented later) -->
+      <h2 class="section-header">Confirm Your Order</h2>
+      <p>This section will be implemented in the next phase.</p>
     </div>
-  </div>
-  
-      <!-- Place Order Section -->
-      <div *ngIf="activeTab === 'place-order'">
-          <h2>Available Products</h2>
-          <ul>
-              <li *ngFor="let product of products">
-                  <span>{{ product.name }} (Stock: {{ product.stock }})</span>
-                  <input type="number" [(ngModel)]="orderQuantities[product.id]" min="0" max="{{ product.stock }}">
-              </li>
-          </ul>
-          <button (click)="placeOrder()">Submit Order</button>
-      </div>
 
-      <!-- Track Orders Section -->
-      <div *ngIf="activeTab === 'track-order'">
-          <h2>Track Your Orders</h2>
-          <p>Coming soon...</p>
-      </div>
+    <div *ngIf="activeTab === 'order-history'">
+      <!-- Placeholder for Order History tab (will be implemented later) -->
+      <h2 class="section-header">Your Order History</h2>
+      <p>This section will be implemented in the next phase.</p>
+    </div>
 
-      <!-- Order History -->
-      <div *ngIf="activeTab === 'order-history'">
-          <h2>Your Order History</h2>
-          <p>Coming soon...</p>
-      </div>
-
-      <!-- Help Section -->
-      <div *ngIf="activeTab === 'help'">
-          <h2>Need Help?</h2>
-          <p>Contact support at support&#64;example.com</p>
-      </div>
+    <div *ngIf="activeTab === 'help'">
+      <!-- Placeholder for Help tab (will be implemented later) -->
+      <h2 class="section-header">Need Help?</h2>
+      <p>This section will be implemented in the next phase.</p>
+    </div>
   </div>
 </div>

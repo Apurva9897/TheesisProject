@@ -1,10 +1,6 @@
-from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required
-from models import User, db
-from routes import auth_bp
 from flask import Blueprint, request, jsonify
-from app import db
-from models import User
+from models import db, User, Customer, Admin # ✅ Uses bcrypt via models
+# ❌ REMOVE werkzeug.security import
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -15,11 +11,11 @@ def login():
     password = data.get('password')
 
     user = User.query.filter_by(email=email).first()
-    
+
     if user and user.check_password(password):
         return jsonify({
             "success": True,
-            "role": user.role  # Send role to frontend for redirection
+            "role": user.role
         }), 200
     else:
         return jsonify({"success": False, "message": "Invalid credentials"}), 401
@@ -27,35 +23,62 @@ def login():
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
-    email = data.get('email')
     username = data.get('username')
+    email = data.get('email')
     password = data.get('password')
     role = data.get('role')
+    phone = data.get('phone')
+    address = data.get('address')
+
+    print(f"Received registration request for {username} ({email}) as {role}")
 
     existing_user = User.query.filter_by(email=email).first()
-
     if existing_user:
+        print("User already exists, registration failed.")
         return jsonify({"success": False, "message": "User already exists"}), 400
 
-    new_user = User(username=username, email=email, role=role, password=password)
-    new_user.set_password(password)
+    try:
+        # ✅ Use bcrypt via set_password()
+        new_user = User(
+            username=username,
+            email=email,
+            role=role
+        )
+        new_user.set_password(password)  # ✅ Uses your bcrypt method
 
-    db.session.add(new_user)
-    db.session.commit()
+        db.session.add(new_user)
+        db.session.flush()
 
-    return jsonify({"success": True, "message": "Registration successful"}), 201
+        print(f"User {username} created with ID {new_user.id}")
 
-    # ✅ If role is 'client', create a Customer entry
-    if role == 'client':
-        new_customer = Customer(user_id=new_user.id, name=username, email=email)
-        db.session.add(new_customer)
+        if role == 'client':
+            new_customer = Customer(
+                name=username,
+                email=email,
+                phone=phone,
+                address=address,
+                user_id=new_user.id
+            )
+            db.session.add(new_customer)
+            print(f"Customer {username} added to customers table.")
+
+        elif role == 'admin':
+            new_admin = Admin(
+                name=username,
+                user_id=new_user.id
+            )
+            db.session.add(new_admin)
+
         db.session.commit()
+        print("✅ Registration successful!")
 
-    return jsonify({"success": True, "message": "Registration successful"}), 201
+        return jsonify({"success": True, "message": "Registration successful"}), 201
 
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error during registration: {str(e)}")
+        return jsonify({"success": False, "message": "Registration failed", "error": str(e)}), 500
 
 @auth_bp.route('/logout')
-@login_required
 def logout():
-    logout_user()
-    return redirect(url_for('auth.login'))
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200

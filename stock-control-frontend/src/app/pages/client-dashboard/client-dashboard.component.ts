@@ -3,20 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  image: string;
-}
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
@@ -27,157 +13,147 @@ interface CartItem {
 export class ClientDashboardComponent implements OnInit {
   activeTab = 'dashboard';
   customerName = 'ABC Company';
-  products: Product[] = [];
-  featuredProducts: Product[] = [];
   orderQuantities: { [key: number]: number } = {};
-  cartItems: CartItem[] = [];
-  customerSummary: any = {};
+  orderErrors: { [key: number]: string } = {};
 
+  // Explicit product information
+  productPrices: { [key: number]: number } = {
+    1: 129.99,  // iPhone15
+    2: 199.99,  // Samsung Galaxy S23
+    3: 89.99,   // Sony WH-1000XM5
+    4: 149.99,  // Dell XPS 15
+    5: 79.99,   // Logitech MX Master3
+    6: 499.99   // Amazon Echo Dot
+  };
+  
+  productStock: { [key: number]: number } = {
+    1: 20,  // iPhone15
+    2: 15,  // Samsung Galaxy S23
+    3: 30,  // Sony WH-1000XM5
+    4: 8,   // Dell XPS 15 (low stock)
+    5: 0,   // Logitech MX Master3 (out of stock)
+    6: 12   // Amazon Echo Dot
+  };
+  
+  productNames: { [key: number]: string } = {
+    1: 'iPhone15',
+    2: 'Samsung Galaxy S23',
+    3: 'Sony WH-1000XM5',
+    4: 'Dell XPS 15',
+    5: 'Logitech MX Master3',
+    6: 'Amazon Echo Dot'
+  };
+  
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.getProducts();
-    this.getCustomerSummary();
+    this.initializeOrderQuantities();
+    
+    // Optionally try to fetch data from API
+    this.tryFetchProductData();
+  }
+  
+  tryFetchProductData() {
+    // Only use this if you want to try to fetch real data from your API
+    this.http.get<any[]>('http://127.0.0.1:5000/customer_dashboard/products').subscribe({
+      next: (response) => {
+        // Update stocks from API response if available
+        response.forEach(item => {
+          if (item.id in this.productStock) {
+            this.productStock[item.id] = item.stock || 0;
+          }
+        });
+        this.initializeOrderQuantities();
+      },
+      error: (error) => {
+        console.error('Error fetching products:', error);
+        // Already using hardcoded data, so no further action needed
+      }
+    });
   }
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
   }
 
-  getProducts() {
-    this.http.get<Product[]>('http://127.0.0.1:5000/customer_dashboard/products').subscribe({
-      next: (response) => {
-        this.products = response;
-        // Initialize featured products with some from the product list
-        // In a real app, this might come from a different endpoint
-        this.featuredProducts = this.products.slice(0, 6);
-        this.initializeOrderQuantities();
-      },
-      error: (error) => {
-        console.error('Error fetching products', error);
-        // Fallback to mock data if API fails
-        this.loadMockProducts();
-      }
-    });
-  }
-
-  // Fallback method to load mock products if API fails
-  loadMockProducts() {
-    this.featuredProducts = [
-      {
-        id: 1,
-        name: 'Wireless Headphones',
-        description: 'High-quality sound with noise cancellation and extended battery life.',
-        price: 129.99,
-        stock: 50,
-        image: 'headphones.jpg'
-      },
-      {
-        id: 2,
-        name: 'Smart Watch',
-        description: 'Fitness tracking, heart rate monitoring, and smart notifications.',
-        price: 199.99,
-        stock: 30,
-        image: 'smartwatch.jpg'
-      },
-      {
-        id: 3,
-        name: 'Bluetooth Speaker',
-        description: 'Portable speaker with 360° sound and 12-hour battery life.',
-        price: 89.99,
-        stock: 40,
-        image: 'speaker.jpg'
-      },
-      {
-        id: 4,
-        name: 'Coffee Maker',
-        description: 'Programmable coffee machine with built-in grinder.',
-        price: 149.99,
-        stock: 25,
-        image: 'coffeemaker.jpg'
-      },
-      {
-        id: 5,
-        name: 'Fitness Tracker',
-        description: 'Water-resistant activity tracker with sleep monitoring.',
-        price: 79.99,
-        stock: 60,
-        image: 'fitnesstracker.jpg'
-      },
-      {
-        id: 6,
-        name: 'Digital Camera',
-        description: '20MP camera with 4K video recording and stabilization.',
-        price: 499.99,
-        stock: 15,
-        image: 'camera.jpg'
-      }
-    ];
-    this.initializeOrderQuantities();
-  }
-
   initializeOrderQuantities() {
-    this.featuredProducts.forEach(product => {
-      if (!this.orderQuantities[product.id]) {
-        this.orderQuantities[product.id] = 1;
-      }
-    });
-  }
-
-  getCustomerSummary() {
-    this.http.get<any>('http://127.0.0.1:5000/customer_dashboard/summary').subscribe({
-      next: (response) => {
-        this.customerSummary = response;
-      },
-      error: (error) => {
-        console.error('Failed to fetch summary:', error);
-        // Fallback to mock data
-        this.customerSummary = {
-          account_id: 'ACC-12345',
-          name: 'ABC Company',
-          email: 'contact@abccompany.com',
-          phone: '555-123-4567'
-        };
-      }
-    });
-  }
-
-  // Product Quantity Controls
-  incrementQuantity(product: Product) {
-    if (this.orderQuantities[product.id] < product.stock) {
-      this.orderQuantities[product.id]++;
+    // Set default quantity to 1 for each product or 0 if out of stock
+    for (let i = 1; i <= 6; i++) {
+      this.orderQuantities[i] = this.productStock[i] > 0 ? 1 : 0;
+      this.orderErrors[i] = '';
     }
   }
 
-  decrementQuantity(product: Product) {
-    if (this.orderQuantities[product.id] > 1) {
-      this.orderQuantities[product.id]--;
+  // Get stock display label
+  getStockLabel(stock: number): string {
+    if (stock === 0) return 'Out of Stock';
+    if (stock <= 10) return `Low Stock: ${stock} left`;
+    return `In Stock: ${stock} available`;
+  }
+
+  // Validate quantity against stock
+  validateQuantity(productId: number, stock: number) {
+    const quantity = this.orderQuantities[productId];
+    
+    // Reset error first
+    this.orderErrors[productId] = '';
+    
+    // Check if quantity is a valid number
+    if (isNaN(quantity) || quantity <= 0) {
+      this.orderErrors[productId] = 'Please enter a valid quantity';
+      this.orderQuantities[productId] = 1;
+      return;
+    }
+    
+    // Check if quantity is larger than available stock
+    if (quantity > stock) {
+      this.orderErrors[productId] = `Only ${stock} items available`;
+      this.orderQuantities[productId] = stock;
+      return;
+    }
+    
+    // Ensure quantity is an integer
+    this.orderQuantities[productId] = Math.floor(quantity);
+  }
+
+  // Quantity control methods
+  incrementQuantity(productId: number) {
+    const stock = this.productStock[productId];
+    
+    if (this.orderQuantities[productId] < stock) {
+      this.orderQuantities[productId]++;
+      this.validateQuantity(productId, stock);
     }
   }
 
-  // Add product to cart
-  addToCart(product: Product) {
-    const quantity = this.orderQuantities[product.id];
+  decrementQuantity(productId: number) {
+    if (this.orderQuantities[productId] > 1) {
+      this.orderQuantities[productId]--;
+      this.orderErrors[productId] = '';
+    }
+  }
+
+  // Add to cart method
+  addToCart(productId: number) {
+    const stock = this.productStock[productId];
+    const quantity = this.orderQuantities[productId];
+    const productName = this.productNames[productId];
     
-    // Check if product is already in cart
-    const existingItemIndex = this.cartItems.findIndex(item => item.product.id === product.id);
-    
-    if (existingItemIndex >= 0) {
-      // Update quantity if product already exists in cart
-      this.cartItems[existingItemIndex].quantity += quantity;
-    } else {
-      // Add new item to cart
-      this.cartItems.push({
-        product: product,
-        quantity: quantity
-      });
+    // Validate one more time to be sure
+    if (quantity > stock) {
+      this.orderErrors[productId] = `Only ${stock} items available`;
+      return;
     }
     
-    alert(`Added ${quantity} ${product.name} to your cart!`);
+    if (stock === 0) {
+      this.orderErrors[productId] = 'This item is out of stock';
+      return;
+    }
+    
+    // If all is well, add to cart
+    alert(`Added ${quantity} ${productName}(s) to your cart.`);
+    
     // Reset quantity to 1
-    this.orderQuantities[product.id] = 1;
+    this.orderQuantities[productId] = 1;
   }
-
-  // For now, we're just implementing a shell for future functionality
-  // Additional methods for the other tabs will be added later
 }

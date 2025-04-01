@@ -7,7 +7,7 @@
       <a href="#">My Account</a>
       <a href="#">Cart</a>
       <a href="#">Wishlist</a>
-      <a href="#"><i class="fa fa-search"></i> Search</a>
+      <a href="#">Search</a>
     </div>
   </nav>
 
@@ -15,71 +15,381 @@
   <nav class="sidebar">
     <ul>
       <li [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">
-        <i class="fa fa-tachometer-alt"></i> Dashboard
+        Dashboard
       </li>
       <li [class.active]="activeTab === 'place-order'" (click)="setActiveTab('place-order')">
-        <i class="fa fa-check-circle"></i> Confirm Order
+        Confirm Order
       </li>
       <li [class.active]="activeTab === 'order-history'" (click)="setActiveTab('order-history')">
-        <i class="fa fa-history"></i> Order History
+        Order History
       </li>
       <li [class.active]="activeTab === 'help'" (click)="setActiveTab('help')">
-        <i class="fa fa-question-circle"></i> Help
+        Help
       </li>
     </ul>
   </nav>
 
   <!-- Main Content Area -->
   <div class="content">
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-      <h1>Welcome, {{ customerName }}</h1>
-    </div>
-
     <!-- Dashboard View -->
     <div *ngIf="activeTab === 'dashboard'">
+      <!-- Welcome Banner -->
+      <h1 class="welcome-text">Welcome, {{ customerName }}</h1>
+      
+      <!-- Featured Products Header -->
       <h2 class="section-header">Featured Products</h2>
+      <hr>
       
       <!-- Products Grid -->
       <div class="products-grid">
-        <div class="product-card" *ngFor="let product of featuredProducts">
+        <!-- Product 1: iPhone15 -->
+        <div class="product-card">
           <div class="product-image">
-            <img [src]="'assets/' + product.image" [alt]="product.name">
+            <img src="assets/iPhone15.png" alt="iPhone15">
           </div>
           <div class="product-details">
-            <h3>{{ product.name }}</h3>
-            <p class="product-description">{{ product.description }}</p>
-            <p class="product-price">${{ product.price.toFixed(2) }}</p>
+            <h3>iPhone15</h3>
+            <p class="product-description">High-quality sound with noise cancellation and extended battery life.</p>
+            <p class="product-price">${{ productPrices[1].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[1] > 10,
+              'low-stock': productStock[1] > 0 && productStock[1] <= 10,
+              'out-of-stock': productStock[1] === 0
+            }">
+              {{ getStockLabel(productStock[1]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[1]" class="error-message">
+              {{ orderErrors[1] }}
+            </p>
             
             <div class="product-controls">
               <div class="quantity-selector">
-                <span>Quantity:</span>
-                <button class="qty-btn" (click)="decrementQuantity(product)">-</button>
-                <input type="number" [(ngModel)]="orderQuantities[product.id]" min="1" max="{{ product.stock }}">
-                <button class="qty-btn" (click)="incrementQuantity(product)">+</button>
+          <span>Quant:</span>
+          <button class="qty-btn" 
+            (click)="decrementQuantity(1)"
+            [disabled]="productStock[1] === 0">-</button>
+          <input type="text" 
+            [(ngModel)]="orderQuantities[1]"
+            (change)="validateQuantity(1, productStock[1])"
+            class="qty-input"
+            [disabled]="productStock[1] === 0">
+          <button class="qty-btn" 
+            (click)="incrementQuantity(1)"
+            [disabled]="productStock[1] === 0 || orderQuantities[1] >= productStock[1]">+</button>
               </div>
-              <button class="add-to-cart-btn" (click)="addToCart(product)">Add to Cart</button>
+              <button class="add-to-cart-btn" 
+          (click)="addToCart(1)"
+          [disabled]="productStock[1] === 0 || orderErrors[1]">
+          Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/iPhone15.png" alt="iPhone15">
+          </div>
+          <div class="product-details">
+            <h3>iPhone15</h3>
+            <p class="product-description">High-quality sound with noise cancellation and extended battery life.</p>
+            <p class="product-price">${{ productPrices[1].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[1] > 10,
+              'low-stock': productStock[1] > 0 && productStock[1] <= 10,
+              'out-of-stock': productStock[1] === 0
+            }">
+              {{ getStockLabel(productStock[1]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[1]" class="error-message">
+              {{ orderErrors[1] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(1)"
+                  [disabled]="productStock[1] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[1]"
+                  (change)="validateQuantity(1, productStock[1])"
+                  class="qty-input"
+                  [disabled]="productStock[1] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(1)"
+                  [disabled]="productStock[1] === 0 || orderQuantities[1] >= productStock[1]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(1)"
+                [disabled]="productStock[1] === 0 || orderErrors[1]">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product 2: Samsung Galaxy S23 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/SamsungGalaxyS23.png" alt="Samsung Galaxy S23">
+          </div>
+          <div class="product-details">
+            <h3>Samsung Galaxy S23</h3>
+            <p class="product-description">Fitness tracking, heart rate monitoring, and smart notifications.</p>
+            <p class="product-price">${{ productPrices[2].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[2] > 10,
+              'low-stock': productStock[2] > 0 && productStock[2] <= 10,
+              'out-of-stock': productStock[2] === 0
+            }">
+              {{ getStockLabel(productStock[2]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[2]" class="error-message">
+              {{ orderErrors[2] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(2)"
+                  [disabled]="productStock[2] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[2]"
+                  (change)="validateQuantity(2, productStock[2])"
+                  class="qty-input"
+                  [disabled]="productStock[2] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(2)"
+                  [disabled]="productStock[2] === 0 || orderQuantities[2] >= productStock[2]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(2)"
+                [disabled]="productStock[2] === 0 || orderErrors[2]">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product 3: Sony WH-1000XM5 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/SonyWH-1000XM5.png" alt="Sony WH-1000XM5">
+          </div>
+          <div class="product-details">
+            <h3>Sony WH-1000XM5</h3>
+            <p class="product-description">Portable speaker with 360° sound and 12-hour battery life.</p>
+            <p class="product-price">${{ productPrices[3].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[3] > 10,
+              'low-stock': productStock[3] > 0 && productStock[3] <= 10,
+              'out-of-stock': productStock[3] === 0
+            }">
+              {{ getStockLabel(productStock[3]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[3]" class="error-message">
+              {{ orderErrors[3] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(3)"
+                  [disabled]="productStock[3] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[3]"
+                  (change)="validateQuantity(3, productStock[3])"
+                  class="qty-input"
+                  [disabled]="productStock[3] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(3)"
+                  [disabled]="productStock[3] === 0 || orderQuantities[3] >= productStock[3]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(3)"
+                [disabled]="productStock[3] === 0 || orderErrors[3]">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product 4: Dell XPS 15 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/DellXPS15.png" alt="Dell XPS 15">
+          </div>
+          <div class="product-details">
+            <h3>Dell XPS 15</h3>
+            <p class="product-description">Programmable coffee machine with built-in grinder.</p>
+            <p class="product-price">${{ productPrices[4].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[4] > 10,
+              'low-stock': productStock[4] > 0 && productStock[4] <= 10,
+              'out-of-stock': productStock[4] === 0
+            }">
+              {{ getStockLabel(productStock[4]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[4]" class="error-message">
+              {{ orderErrors[4] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(4)"
+                  [disabled]="productStock[4] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[4]"
+                  (change)="validateQuantity(4, productStock[4])"
+                  class="qty-input"
+                  [disabled]="productStock[4] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(4)"
+                  [disabled]="productStock[4] === 0 || orderQuantities[4] >= productStock[4]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(4)"
+                [disabled]="productStock[4] === 0 || orderErrors[4]">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product 5: Logitech MX Master3 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/LogitechMX.png" alt="Logitech MX Master3">
+          </div>
+          <div class="product-details">
+            <h3>Logitech MX Master3</h3>
+            <p class="product-description">Water-resistant activity tracker with sleep monitoring.</p>
+            <p class="product-price">${{ productPrices[5].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[5] > 10,
+              'low-stock': productStock[5] > 0 && productStock[5] <= 10,
+              'out-of-stock': productStock[5] === 0
+            }">
+              {{ getStockLabel(productStock[5]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[5]" class="error-message">
+              {{ orderErrors[5] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(5)"
+                  [disabled]="productStock[5] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[5]"
+                  (change)="validateQuantity(5, productStock[5])"
+                  class="qty-input"
+                  [disabled]="productStock[5] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(5)"
+                  [disabled]="productStock[5] === 0 || orderQuantities[5] >= productStock[5]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(5)"
+                [disabled]="productStock[5] === 0 || orderErrors[5]">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product 6: Amazon Echo Dot -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/amazonEcho.png" alt="Amazon Echo Dot">
+          </div>
+          <div class="product-details">
+            <h3>Amazon Echo Dot</h3>
+            <p class="product-description">20MP camera with 4K video recording and stabilization.</p>
+            <p class="product-price">${{ productPrices[6].toFixed(2) }}</p>
+            
+            <!-- Stock Information -->
+            <p class="stock-info" [ngClass]="{
+              'in-stock': productStock[6] > 10,
+              'low-stock': productStock[6] > 0 && productStock[6] <= 10,
+              'out-of-stock': productStock[6] === 0
+            }">
+              {{ getStockLabel(productStock[6]) }}
+            </p>
+            
+            <!-- Error message for invalid quantity -->
+            <p *ngIf="orderErrors[6]" class="error-message">
+              {{ orderErrors[6] }}
+            </p>
+            
+            <div class="product-controls">
+              <div class="quantity-selector">
+                <span>Quant:</span>
+                <button class="qty-btn" 
+                  (click)="decrementQuantity(6)"
+                  [disabled]="productStock[6] === 0">-</button>
+                <input type="text" 
+                  [(ngModel)]="orderQuantities[6]"
+                  (change)="validateQuantity(6, productStock[6])"
+                  class="qty-input"
+                  [disabled]="productStock[6] === 0">
+                <button class="qty-btn" 
+                  (click)="incrementQuantity(6)"
+                  [disabled]="productStock[6] === 0 || orderQuantities[6] >= productStock[6]">+</button>
+              </div>
+              <button class="add-to-cart-btn" 
+                (click)="addToCart(6)"
+                [disabled]="productStock[6] === 0 || orderErrors[6]">
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Other tabs will go here later -->
+    <!-- Other tabs will be implemented later -->
     <div *ngIf="activeTab === 'place-order'">
-      <!-- Placeholder for Confirm Order tab (will be implemented later) -->
       <h2 class="section-header">Confirm Your Order</h2>
       <p>This section will be implemented in the next phase.</p>
     </div>
 
     <div *ngIf="activeTab === 'order-history'">
-      <!-- Placeholder for Order History tab (will be implemented later) -->
       <h2 class="section-header">Your Order History</h2>
       <p>This section will be implemented in the next phase.</p>
     </div>
 
     <div *ngIf="activeTab === 'help'">
-      <!-- Placeholder for Help tab (will be implemented later) -->
       <h2 class="section-header">Need Help?</h2>
       <p>This section will be implemented in the next phase.</p>
     </div>

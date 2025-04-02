@@ -46,29 +46,47 @@ def calculate_status(order_date):
     else:
         return 'Delivered'
 
-@customer_dashboard_bp.route('/place_order', methods=['POST'])
-def place_order():
+@customer_dashboard_bp.route('/confirm_order', methods=['POST'])
+def confirm_order():
     data = request.get_json()
     customer_email = data.get('email')
-    items = data.get('items')
+    items = data.get('items', [])
 
     if not customer_email or not items:
-        return jsonify({'success': False, 'message': 'Missing data'})
+        return jsonify({'success': False, 'message': 'Missing data'}), 400
 
-    user = User.query.filter_by(email=customer_email).first()
-    if not user:
-        return jsonify({'success': False, 'message': 'User not found'})
+    selected_items = []
+    total_price = 0.0
 
-    customer = Customer.query.filter_by(user_id=user.id).first()
-    if not customer:
-        return jsonify({'success': False, 'message': 'Customer profile not found'})
+    try:
+        for item in items:
+            product_id = item.get('product_id')
+            quantity = item.get('quantity', 0)
+            product = Product.query.get(product_id)
 
-    # Process Order
-    order = Order(customer_id=customer.id, customer_email=customer.email, status='Pending')
-    db.session.add(order)
-    db.session.commit()
+            if not product:
+                continue
 
-    return jsonify({'success': True, 'message': 'Order placed successfully'})
+            subtotal = float(product.price) * quantity
+            total_price += subtotal
+
+            selected_items.append({
+                'id': product.id,
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': quantity,
+                'subtotal': round(subtotal, 2),
+                'image': product.name.replace(" ", "") + ".png"
+            })
+
+        return jsonify({
+            'success': True,
+            'items': selected_items,
+            'total_price': round(total_price, 2)
+        }), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @customer_dashboard_bp.route('/summary', methods=['GET'])

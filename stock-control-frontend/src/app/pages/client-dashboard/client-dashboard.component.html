@@ -6,7 +6,7 @@
   <div class="navbar-links">
     <a href="#">My Account</a>
     <a href="#">
-      Cart <span class="badge bg-success">{{ cartItemCount }}</span>
+      total <span class="badge bg-success">{{ total }}</span>
     </a>
     <a href="#">Wishlist</a>
     <a href="#">Search</a>
@@ -91,5 +91,7 @@
       <p>This section will be implemented in the next phase.</p>
     </div>
   </div>
-  <button class="place-order-btn" (click)="navigateToConfirmOrder()">Confirm Order</button>
+  <button class="btn btn-success confirm-order-btn" (click)="navigateToConfirmOrder()">
+    Confirm Order
+  </button>
 </div>

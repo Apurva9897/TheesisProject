@@ -20,7 +20,8 @@ interface Product {
   styleUrls: ['./client-dashboard.component.css']
 })
 export class ClientDashboardComponent implements OnInit {
-  cartItemCount: number = 0;
+  selectedItems: any[] = [];
+  total: number = 0;
   activeTab = 'dashboard';
   customerName = 'ABC Company';
 
@@ -28,10 +29,24 @@ export class ClientDashboardComponent implements OnInit {
   orderQuantities: { [key: number]: number } = {};
   orderErrors: { [key: number]: string } = {};
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    const navState = this.router.getCurrentNavigation()?.extras?.state;
+    this.selectedItems = navState?.['items'] || [];
+    this.total = this.selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }
 
   navigateToConfirmOrder(): void {
-    this.router.navigate(['/confirm_order']);
+    const selectedItems = this.products
+    .filter(p => this.orderQuantities[p.id] > 0)
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      quantity: this.orderQuantities[p.id],
+      price: p.price,
+      image: `assets/${p.name.split(' ').join('')}.png`
+    }));
+
+  this.router.navigate(['/confirm-order'], { state: { items: selectedItems } });
   }
 
   ngOnInit(): void {
@@ -120,7 +135,7 @@ export class ClientDashboardComponent implements OnInit {
     alert(`Added ${quantity} ${product.name}(s) to your cart.`);
   
     // ✅ Increment cart item count
-    this.cartItemCount += quantity;
+    this.total += quantity;
   
     // Optional: Reset quantity to 1 after adding
     this.orderQuantities[productId] = 1;

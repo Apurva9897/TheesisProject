@@ -22,7 +22,6 @@ export class ConfirmOrderComponent implements OnInit {
     if (navigation.items) {
       this.selectedItems = navigation.items;
 
-      // Call Flask API to confirm order
       this.http.post<any>('http://127.0.0.1:5000/customer_dashboard/confirm_order', {
         email: navigation.email || 'demo@example.com',
         items: this.selectedItems.map(item => ({
@@ -32,7 +31,12 @@ export class ConfirmOrderComponent implements OnInit {
       }).subscribe(response => {
         if (response.success) {
           this.totalPrice = response.total_price;
-          this.selectedItems = response.items;
+
+          this.selectedItems = response.items.map((item: any) => ({
+            ...item,
+            subtotal: item.price * item.quantity,
+            image: item.name.split(' ').join('') + '.png'
+          }));
         }
       });
     }

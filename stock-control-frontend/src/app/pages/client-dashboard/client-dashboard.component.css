@@ -240,6 +240,21 @@ hr {
   margin-top: 5px;
 }
 
+.confirm-order-btn {
+  margin: 20px auto;
+  display: block;
+  background-color: #28a745; /* Bootstrap success green */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.confirm-order-btn:hover {
+  background-color: #218838;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .products-grid {
@@ -283,4 +298,5 @@ hr {
     margin-left: 80px;
     padding: 10px;
   }
+
 }

@@ -1,15 +1,27 @@
-<form (ngSubmit)="onRegister()">
-  <input type="text" [(ngModel)]="username" name="username" placeholder="Username" required>
-  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
-  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required>
-  
-  <select [(ngModel)]="role" name="role">
+<div class="register-container">
+  <div class="register-box">
+    <h2>Register</h2>
+
+    <input type="text" placeholder="Username" [(ngModel)]="username" name="username" />
+    <input type="email" placeholder="Email" [(ngModel)]="email" name="email" />
+    <input type="password" placeholder="Password" [(ngModel)]="password" name="password" />
+
+    <select [(ngModel)]="role" name="role">
+      <option value="" disabled selected>Select Role</option>
       <option value="client">Client</option>
       <option value="admin">Admin</option>
       <option value="staff">Staff</option>
-  </select>
-  
-  <input type="text" [(ngModel)]="phone" name="phone" placeholder="Phone Number">
-  <input type="text" [(ngModel)]="address" name="address" placeholder="Address">
-  <button type="submit">Register</button>
-</form>
+    </select>
+
+    <input type="text" placeholder="Phone Number" [(ngModel)]="phone" name="phone" />
+    <input type="text" placeholder="Address" [(ngModel)]="address" name="address" />
+    <button (click)="onRegister()" class="register-button">Register</button>
+    <button (click)="goToLogin()" class="back-button">Back to Login</button>
+    <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" class="register-message">
+      {{ registrationMessage }}
+    </div>
+  </div>
+  <div *ngIf="showPopup" [ngClass]="popupClass" class="popup-message">
+    {{ popupMessage }}
+  </div>
+</div>

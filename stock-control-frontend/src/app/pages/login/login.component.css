@@ -5,7 +5,7 @@
     height: 100vh;
     background-color: #f3f3f3;
     &.bgimage{
-      background-image: url('C:/Users/Apurva Kulkarni/images/warehouse.png');
+      background-image: url('/assets/warehouse_image.jpg');
       height: 100vh;
       width: 100%;
       background-size: cover;
@@ -71,4 +71,59 @@
     color: #007bff;
     text-decoration: none;
   }
+
+  .login-message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
+
+  .popup-message {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    animation: fadeInOut 4s ease-in-out;
+  }
+  
+  /* Green for success */
+  .popup-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  /* Red for error */
+  .popup-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  @keyframes fadeInOut {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    90%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  }
+  
   

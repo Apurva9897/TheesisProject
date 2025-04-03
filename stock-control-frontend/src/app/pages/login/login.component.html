@@ -25,14 +25,18 @@
           class="form-control"
         />
       </div>
-
       <button type="submit" class="login-btn">Login</button>
     </form>
-
+    <div *ngIf="loginMessage" [ngClass]="loginMessageClass" class="login-message">
+      {{ loginMessage }}
+    </div>
     <p class="register-link">
       Don't have an account?
       <a (click)="goToRegister()" class="text-primary" style="cursor: pointer; text-decoration: underline;">Register here</a>
 
     </p>
+  </div>
+  <div *ngIf="showPopup" [ngClass]="popupClass" class="popup-message">
+    {{ popupMessage }}
   </div>
 </div>

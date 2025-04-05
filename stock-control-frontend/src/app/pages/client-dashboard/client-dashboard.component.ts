@@ -23,7 +23,7 @@ export class ClientDashboardComponent implements OnInit {
   selectedItems: any[] = [];
   total: number = 0;
   activeTab = 'dashboard';
-  customerName = 'ABC Company';
+  customerName = 'Universal Computer Warehouse';
 
   products: Product[] = [];
   orderQuantities: { [key: number]: number } = {};

@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common'; // ✅ Import this
 export class ConfirmOrderComponent implements OnInit {
   selectedItems: any[] = [];
   totalPrice: number = 0;
-
+  grandTotal: number | undefined;
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -43,6 +43,9 @@ export class ConfirmOrderComponent implements OnInit {
   }
 
   getImagePath(fileName: string): string {
+    if (!fileName) {
+      return 'assets/default.png';  // fallback if image not provided
+    }
     return `assets/${fileName}`;
   }
 }

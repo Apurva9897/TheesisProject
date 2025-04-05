@@ -48,45 +48,61 @@ def calculate_status(order_date):
 
 @customer_dashboard_bp.route('/confirm_order', methods=['POST'])
 def confirm_order():
-    data = request.get_json()
-    customer_email = data.get('email')
-    items = data.get('items', [])
-
-    if not customer_email or not items:
-        return jsonify({'success': False, 'message': 'Missing data'}), 400
-
-    selected_items = []
-    total_price = 0.0
-
     try:
+        data = request.json
+        email = data.get('email')
+        items = data.get('items', [])
+
+        if not email or not items:
+            return jsonify({"success": False, "message": "Invalid data"}), 400
+
+        total_price = 0
+        updated_items = []
+
         for item in items:
             product_id = item.get('product_id')
-            quantity = item.get('quantity', 0)
-            product = Product.query.get(product_id)
+            quantity = item.get('quantity')
 
+            if not product_id or not quantity:
+                continue
+
+            # Fetch product from DB
+            product = Product.query.get(product_id)
             if not product:
                 continue
 
+            if product.stock < quantity:
+                return jsonify({"success": False, "message": f"Not enough stock for {product.name}"}), 400
+
+            # Calculate subtotal
             subtotal = float(product.price) * quantity
             total_price += subtotal
 
-            selected_items.append({
-                'id': product.id,
-                'name': product.name,
-                'price': float(product.price),
-                'quantity': quantity,
-                'subtotal': round(subtotal, 2),
-                'image': product.name.replace(" ", "") + ".png"
+            # Reduce stock
+            product.stock -= quantity
+
+            # Add to updated_items list
+            updated_items.append({
+                "id": product.id,
+                "name": product.name,
+                "price": float(product.price),
+                "quantity": quantity,
+                "subtotal": subtotal,
+                "image": product.name.replace(' ', '') + ".png"  # To match your Angular assets
             })
 
+        # Commit the stock updates
+        db.session.commit()
+
         return jsonify({
-            'success': True,
-            'items': selected_items,
-            'total_price': round(total_price, 2)
+            "success": True,
+            "total_price": round(total_price, 2),
+            "items": updated_items
         }), 200
 
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        db.session.rollback()
+        return jsonify({"success": False, "message": "Error confirming order", "error": str(e)}), 500
 
 
 @customer_dashboard_bp.route('/summary', methods=['GET'])

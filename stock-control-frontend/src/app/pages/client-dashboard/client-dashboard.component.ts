@@ -24,7 +24,7 @@ export class ClientDashboardComponent implements OnInit {
   total: number = 0;
   activeTab = 'dashboard';
   customerName = 'Universal Computer Warehouse';
-
+  
   products: Product[] = [];
   orderQuantities: { [key: number]: number } = {};
   orderErrors: { [key: number]: string } = {};
@@ -58,10 +58,10 @@ export class ClientDashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.products) {
           this.products = response.products;
-
-          // Initialize order quantities and errors
+  
+          // ✅ Corrected: Initialize order quantities to 0
           this.products.forEach(product => {
-            this.orderQuantities[product.id] = product.stock > 0 ? 1 : 0;
+            this.orderQuantities[product.id] = 0;
             this.orderErrors[product.id] = '';
           });
         }
@@ -136,9 +136,7 @@ export class ClientDashboardComponent implements OnInit {
   
     // ✅ Increment cart item count
     this.total += quantity;
-  
-    // Optional: Reset quantity to 1 after adding
-    this.orderQuantities[productId] = 1;
+    
   }
   
 }

@@ -5,6 +5,13 @@
     min-height: 100vh;
   }
   
+  .product-image {
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+    margin: 10px 0;
+  }
+
   .order-item {
     display: flex;
     align-items: center;
@@ -12,13 +19,6 @@
     gap: 15px;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
-  }
-  
-  .product-image {
-    width: 100px;
-    height: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
   }
   
   .details {

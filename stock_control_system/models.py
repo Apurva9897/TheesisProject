@@ -122,7 +122,7 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.DECIMAL(10, 2), nullable=False)
     stock = db.Column(db.Integer, nullable=False, default=0)
-
+    sold_quantity = db.Column(db.Integer, nullable=False, default=0)  # ✅ New column for tracking sold items
     # Link to Supplier
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'), nullable=False)
     supplier = db.relationship("Supplier", back_populates="products")

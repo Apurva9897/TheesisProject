@@ -1,28 +1,64 @@
 <!-- Main Dashboard Container -->
 <div class="dashboard-container">
+
+  <div class="sidebar">
+
+    <h3>Filter by...</h3>
+    <div class="filter-section">
+      <label>Best Sellers:</label>
+      <select [(ngModel)]="selectedBestSeller" (change)="applyFilters()">
+        <option value="">All</option>
+        <option value="top">Top 5 Best Sellers</option>
+        <option value="low">Low Sellers</option>
+      </select>
+    </div>
+    <div class="filter-section">
+      <label>Stock Availability:</label>
+      <select [(ngModel)]="selectedStock" (change)="applyFilters()">
+        <option value="">All</option>
+        <option value="in">In Stock</option>
+        <option value="low">Low Stock</option>
+        <option value="out">Out of Stock</option>
+      </select>
+    </div>
+    
+    <div class="filter-section">
+      <label>Price:</label>
+      <select [(ngModel)]="selectedPrice" (change)="applyFilters()">
+        <option value="">All</option>
+        <option value="lowtohigh">Low to High</option>
+        <option value="hightolow">High to Low</option>
+      </select>
+    </div>
+    <div class="filter-buttons">
+      <button (click)="applyFilters()" class="btn btn-primary">Apply Filters</button>
+      <button (click)="resetFilters()" class="btn btn-secondary" style="margin-left: 10px;">Clear Filters</button>
+    </div>
+  </div>
+ 
   <!-- Top Navigation Bar -->
 <nav class="navbar">
   <div class="navbar-brand">MyShop</div>
   <div class="navbar-links">
-    <a href="#">My Account</a>
+    <!-- My Account Dropdown -->
+    <div class="dropdown" (click)="toggleDropdown()" style="position: relative; cursor: pointer;">
+      My Account
+      <div *ngIf="dropdownOpen" style="position: absolute; background: white; color: black; top: 100%; right: 0; border: 1px solid #ccc; border-radius: 5px; width: 150px; margin-top: 5px;">
+        <div (click)="goToUpdateProfile()" style="padding: 10px; cursor: pointer;">Update Profile</div>
+        <div (click)="signOut()" style="padding: 10px; cursor: pointer;">Sign Out</div>
+      </div>
+    </div>
+  
+    <!-- Total -->
     <a href="#">
       total <span class="badge bg-success">{{ total }}</span>
     </a>
-    <a href="#">Wishlist</a>
-    <a href="#">Search</a>
   </div>
+  
 </nav>
 
-  <!-- Sidebar Navigation -->
-  <nav class="sidebar">
-    <ul>
-      <li [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">Dashboard</li>
-      <li [class.active]="activeTab === 'place-order'" (click)="setActiveTab('place-order')">Confirm Order</li>
-      <li [class.active]="activeTab === 'order-history'" (click)="setActiveTab('order-history')">Order History</li>
-      <li [class.active]="activeTab === 'help'" (click)="setActiveTab('help')">Help</li>
-    </ul>
-  </nav>
-
+   
+  
   <!-- Main Content Area -->
   <div class="content">
     <!-- Dashboard View -->
@@ -32,7 +68,7 @@
       <hr>
 
       <div class="products-grid">
-        <div *ngFor="let product of products" class="product-card">
+        <div *ngFor="let product of filteredProducts" class="product-card">
           <div class="product-image">
             <img [src]="'assets/' + product.name.split(' ').join('') + '.png'" [alt]="product.name" />
           </div>

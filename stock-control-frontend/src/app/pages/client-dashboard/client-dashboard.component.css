@@ -1,9 +1,10 @@
 /* Main Dashboard Container */
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
+  display: block;
   min-height: 100vh;
   font-family: Arial, sans-serif;
+  position: relative;
+  padding-top: 60px; /* Space for navbar */
 }
 
 /* Top Navigation Bar */
@@ -38,47 +39,51 @@
   font-size: 16px;
 }
 
-/* Main Content Layout */
-.content {
-  margin-left: 250px; /* Width of the sidebar */
-  padding: 20px;
-  background-color: white;
-  min-height: 100vh;
-  margin-top: 60px; /* Height of navbar */
-}
-
-/* Sidebar - Fixed position with full height */
+/* Sidebar styling */
 .sidebar {
   position: fixed;
-  top: 60px; /* Height of the navbar */
+  top: 60px; /* Below navbar */
   left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: #222;
-  color: white;
-  overflow-y: auto; /* Add scrolling to sidebar if needed */
-  z-index: 900;
-  bottom: 0;
+  width: 220px;
+  height: calc(100vh - 60px);
+  background-color: #f8f9fa;
+  padding: 15px;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+  z-index: 100;
 }
 
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+.sidebar h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
 }
 
-.sidebar li {
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #555;
+}
+
+.filter-section select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Main Content Layout */
+.content {
+  margin-left: 250px; /* Width of sidebar + padding */
   padding: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.sidebar li:hover {
-  background-color: #333;
-}
-
-.sidebar li.active {
-  background-color: #1abc9c;
+  background-color: white;
+  min-height: calc(100vh - 60px);
 }
 
 /* Welcome Text */
@@ -240,9 +245,13 @@ hr {
   margin-top: 5px;
 }
 
+/* Confirm Order Button */
 .confirm-order-btn {
-  margin: 20px auto;
-  display: block;
+  position: fixed;
+  bottom: 20px;
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%);
+  z-index: 200;
   background-color: #28a745; /* Bootstrap success green */
   color: white;
   border: none;
@@ -251,6 +260,7 @@ hr {
   border-radius: 5px;
   cursor: pointer;
 }
+
 .confirm-order-btn:hover {
   background-color: #218838;
 }
@@ -298,5 +308,4 @@ hr {
     margin-left: 80px;
     padding: 10px;
   }
-
 }

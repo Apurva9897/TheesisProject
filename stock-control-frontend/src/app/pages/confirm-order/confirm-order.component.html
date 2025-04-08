@@ -2,16 +2,24 @@
   <h2>Order Confirmation</h2>
 
   <div *ngFor="let item of selectedItems" class="order-item">
-    <img [src]="'assets/' + item.image" alt="{{ item.name }}" class="product-image">
-    <div class="details">
+    <!--<img [src]="getImagePath(item.image)" alt="{{ item.name }}" class="product-image">-->
+    <img [src]="getImagePath(item.image)" alt="{{ item.name }}" width="150" height="150">
+
+      <div class="details">
       <h4>{{ item.name }}</h4>
       <p>Price: ${{ item.price.toFixed(2) }}</p>
       <p>Quantity: {{ item.quantity }}</p>
-      <p *ngIf="grandTotal !== undefined">Total to Pay: ${{ grandTotal.toFixed(2) }}</p>
+      <p>Subtotal: ${{ item.subtotal }}</p> <!-- ✅ ADD THIS LINE -->
+      <!--<p><strong>Subtotal: ${{ item.subtotal.toFixed(2) }}</strong></p> -->
     </div>
   </div>
 
   <div class="total">
     <h3>Total to Pay: ${{ totalPrice.toFixed(2) }}</h3>
+  </div>
+
+  <div class="button-group">
+    <button (click)="goBack()" class="btn-back">Back to Shop</button>
+    <button (click)="payNow()" class="btn-pay">Pay Now</button>
   </div>
 </div>

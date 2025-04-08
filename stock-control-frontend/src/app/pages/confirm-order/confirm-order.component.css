@@ -31,3 +31,28 @@
     font-weight: bold;
   }
   
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+  }
+  
+  .btn-back, .btn-pay {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .btn-back {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .btn-pay {
+    background-color: #28a745;
+    color: white;
+  }
+  

@@ -42,7 +42,8 @@ export class LoginComponent {
             if (response.success) {
                 this.loginMessage = 'Login Successful!';
                 this.loginMessageClass = 'success';
-  
+                sessionStorage.setItem('user_email', this.email);
+
                 if (response.role === 'admin' || response.role === 'staff') {
                     this.router.navigate(['/admin-dashboard']);
                 } else if (response.role === 'client') {

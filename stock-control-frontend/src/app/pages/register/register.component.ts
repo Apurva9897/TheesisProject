@@ -1,81 +1,83 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatOptionModule
+  ]
 })
 export class RegisterComponent {
-  username: string = '';
-  email: string = '';
-  password: string = '';
-  phone: string = ''; // ✅ Added phone property
-  address: string = ''; // ✅ Added address property
-  role: string = 'client'; // Default role is client
-  registrationMessage: string = '';
-  registrationMessageClass: string = '';
-  popupMessage: string = '';
-  popupClass: string = '';
-  showPopup: boolean = false;
-  apiUrl: string = 'http://127.0.0.1:5000/auth/register';
+  registerForm!: FormGroup;
+  showPassword = false;
+  passwordStrength = '';
+  registrationMessage = '';
+  registrationMessageClass = '';
+  popupMessage = '';
+  popupClass = '';
+  showPopup = false;
 
-  constructor(private router: Router, private http: HttpClient) {}
-
-  // ✅ Reusable function for popup
-  showPopupMessage(message: string, type: 'success' | 'error') {
-    this.popupMessage = message;
-    this.popupClass = type === 'success' ? 'popup-success' : 'popup-error';
-    this.showPopup = true;
-
-    setTimeout(() => {
-      this.showPopup = false;
-    }, 4000); // disappears after 4 seconds
-  }
-  onRegister() {
-    const newUser = {
-      username: this.username,
-      email: this.email,
-      password: this.password,
-      role: this.role,
-      phone: this.phone,
-      address: this.address,
-    };
-  
-    this.http.post(this.apiUrl, newUser).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.registrationMessage = 'Registration Successful!';
-          this.registrationMessageClass = 'success';
-  
-          // Optional: Clear form
-          this.username = '';
-          this.email = '';
-          this.password = '';
-          this.role = '';
-          this.phone = '';
-          this.address = '';
-        } else {
-          this.registrationMessage = 'Registration failed.';
-          this.registrationMessageClass = 'error';
-        }
-      },
-      error: (error) => {
-        this.registrationMessage = error?.error?.message || 'Something went wrong';
-        this.registrationMessageClass = 'error';
-        console.error(error);
-      }
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.registerForm = this.fb.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      role: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      address: ['', Validators.required]
     });
   }
-  
 
-goToLogin() {
-    this.router.navigate(['/login']);
+  checkPasswordStrength() {
+    const password = this.registerForm.get('password')?.value || '';
+    if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+      this.passwordStrength = 'strong';
+    } else if (password.length >= 6) {
+      this.passwordStrength = 'medium';
+    } else {
+      this.passwordStrength = 'weak';
+    }
   }
 
+  onRegister() {
+    if (this.registerForm.valid) {
+      console.log('Registration data:', this.registerForm.value);
+      this.registrationMessage = 'Registration successful!';
+      this.registrationMessageClass = 'success';
+      this.router.navigate(['/login']);
+    } else {
+      this.registrationMessage = 'Please fill all fields correctly.';
+      this.registrationMessageClass = 'error';
+    }
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const pattern = /[0-9]/;
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
 }

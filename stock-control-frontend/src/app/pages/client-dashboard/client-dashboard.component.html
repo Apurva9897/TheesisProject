@@ -44,9 +44,9 @@
     <div class="dropdown" (click)="toggleDropdown()" style="position: relative; cursor: pointer;">
       My Account
       <div *ngIf="dropdownOpen" style="position: absolute; background: white; color: black; top: 100%; right: 0; border: 1px solid #ccc; border-radius: 5px; width: 150px; margin-top: 5px;">
-        <div (click)="goToUpdateProfile()" style="padding: 10px; cursor: pointer;">Update Profile</div>
-        <div (click)="signOut()" style="padding: 10px; cursor: pointer;">Sign Out</div>
-      </div>
+        <button (click)="goToUpdateProfile()" style="padding: 10px; cursor: pointer; width: 100%; background: none; border: none; text-align: left;">Update Profile</button>
+        <button (click)="signOut()" style="padding: 10px; cursor: pointer; width: 100%; background: none; border: none; text-align: left;">Sign Out</button>
+      </div>      
     </div>
   
     <!-- Total -->

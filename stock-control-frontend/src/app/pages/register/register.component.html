@@ -2,25 +2,69 @@
   <div class="register-box">
     <h2>Register</h2>
 
-    <input type="text" placeholder="Username" [(ngModel)]="username" name="username" />
-    <input type="email" placeholder="Email" [(ngModel)]="email" name="email" />
-    <input type="password" placeholder="Password" [(ngModel)]="password" name="password" />
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
-    <select [(ngModel)]="role" name="role">
-      <option value="" disabled selected>Select Role</option>
-      <option value="client">Client</option>
-      <option value="admin">Admin</option>
-    </select>
+      <!-- Username -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Enter username" />
+      </mat-form-field>
 
-    <input type="text" placeholder="Phone Number" [(ngModel)]="phone" name="phone" />
-    <input type="text" placeholder="Address" [(ngModel)]="address" name="address" />
-    <button (click)="onRegister()" class="register-button">Register</button>
-    <button (click)="goToLogin()" class="back-button">Back to Login</button>
-    <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" class="register-message">
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter email" />
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" (input)="checkPasswordStrength()" />
+        <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Password Strength -->
+      <div *ngIf="passwordStrength" class="strength-msg" [ngClass]="passwordStrength">
+        Password strength: {{ passwordStrength | titlecase }}
+      </div>
+
+      <!-- Role -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role">
+          <mat-option value="client">Client</mat-option>
+          <mat-option value="admin">Admin</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Phone -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phone" maxlength="10" (keypress)="allowOnlyNumbers($event)" placeholder="Enter phone number" />
+      </mat-form-field>
+
+      <!-- Address -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address" placeholder="Enter address" />
+      </mat-form-field>
+
+      <!-- Buttons -->
+<button mat-raised-button color="primary" type="submit" class="full-width" style="margin-top: 16px;">
+  Register
+</button>
+
+<button mat-raised-button color="accent" type="button" (click)="goToLogin()" class="full-width" style="margin-top: 10px;">
+  Back to Login
+</button>
+
+    </form>
+
+    <!-- Registration Message -->
+    <div *ngIf="registrationMessage" class="register-message" [ngClass]="registrationMessageClass">
       {{ registrationMessage }}
     </div>
-  </div>
-  <div *ngIf="showPopup" [ngClass]="popupClass" class="popup-message">
-    {{ popupMessage }}
   </div>
 </div>

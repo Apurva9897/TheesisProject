@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import session
 from sqlalchemy import text 
 
+
 customer_dashboard_bp = Blueprint('customer_dashboard', __name__)
 
 @customer_dashboard_bp.route('/products', methods=['GET'])
@@ -22,31 +23,7 @@ def get_products():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-@customer_dashboard_bp.route('/orders', methods=['GET'])
-def get_client_orders():
-    orders = Order.query.all()
-    result = []
-    for order in orders:
-        order_date = order.date.strftime('%Y-%m-%d')
-        status = calculate_status(order.date)
-        result.append({
-            'id': f'ORD-{order.id}',
-            'date': order_date,
-            'status': status
-        })
-    return jsonify(result)
 
-def calculate_status(order_date):
-    today = datetime.utcnow().date()
-    days_diff = (today - order_date).days
-    if days_diff < 2:
-        return 'Pending'
-    elif 2 <= days_diff < 4:
-        return 'Processing'
-    elif 4 <= days_diff < 6:
-        return 'Shipped'
-    else:
-        return 'Delivered'
 
 @customer_dashboard_bp.route('/confirm_order', methods=['POST'])
 def confirm_order():
@@ -210,15 +187,43 @@ def get_customer_summary():
         'phone': user.customer.phone
     })
 
+
+def calculate_status(order_datetime):
+    today = datetime.utcnow().date()
+    order_date = order_datetime.date()
+    days_diff = (today - order_date).days
+
+    if days_diff == 0:
+        return 'Pending'
+    elif days_diff == 1:
+        return 'Packaging'
+    else:
+        return 'Delivered'
+
 @customer_dashboard_bp.route('/track_orders', methods=['GET'])
 def track_orders():
-    """Fetch the order details of a customer."""
+    """Fetch the order details of a customer with live status."""
     email = request.args.get("email")  # Identify customer
+    
+    if not email:
+        return jsonify({"success": False, "message": "Email is required."}), 400
+
     orders = Order.query.filter_by(customer_email=email).all()
     
-    order_details = [
-        {"order_id": order.id, "product": order.product_name, "quantity": order.quantity, "status": order.status}
-        for order in orders
-    ]
-    
+    order_details = []
+    for order in orders:
+        # Fetch all order details (products inside this order)
+        order_items = OrderDetails.query.filter_by(order_id=order.id).all()
+        for item in order_items:
+            product = Product.query.get(item.product_id)
+            if product:
+                status = calculate_status(order.order_date)
+                order_details.append({
+                    "order_id": order.id,
+                    "product_name": product.name,
+                    "quantity": item.quantity,
+                    "status": status
+                })
+
     return jsonify({"success": True, "orders": order_details}), 200
+

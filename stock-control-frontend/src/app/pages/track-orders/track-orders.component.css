@@ -1,0 +1,42 @@
+.track-orders-container {
+    padding: 20px;
+  }
+  
+  .order-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  
+  .tracker {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    position: relative;
+  }
+  
+  .tracker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 90%;
+    height: 2px;
+    background: #ccc;
+    z-index: 0;
+  }
+  
+  .step {
+    width: 33%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-weight: bold;
+    color: #aaa;
+  }
+  
+  .step.active {
+    color: #28a745;
+  }
+  

@@ -40,6 +40,11 @@
 <nav class="navbar">
   <div class="navbar-brand">MyShop</div>
   <div class="navbar-links">
+    <!-- Add this new button -->
+    <a (click)="goToTrackOrders()" style="cursor: pointer; margin-right: 20px; text-decoration: none; color: white; font-weight: bold;">
+      Track Orders
+    </a>
+
     <!-- My Account Dropdown -->
     <div class="dropdown" (click)="toggleDropdown()" style="position: relative; cursor: pointer;">
       My Account

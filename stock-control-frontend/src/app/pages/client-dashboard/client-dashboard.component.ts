@@ -214,5 +214,9 @@ signOut() {
   localStorage.clear();  // clear login info
   this.router.navigate(['/login']);  // go to login page
 }
+
+goToTrackOrders() {
+  this.router.navigate(['/track-orders']);
+}
   
 }

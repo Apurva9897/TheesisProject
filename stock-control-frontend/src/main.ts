@@ -4,6 +4,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),  // Use the imported routes here!

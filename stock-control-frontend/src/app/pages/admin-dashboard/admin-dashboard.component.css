@@ -1,0 +1,93 @@
+.admin-dashboard-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    width: 220px;
+    background-color: #4357AD; /* ✅ Dark Blue */
+    color: white;
+    padding: 20px;
+  }
+  
+  .sidebar h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .sidebar li.active {
+    background-color: #2C3E91; /* Darker blue on active */
+  }
+  
+  .sidebar li:hover {
+    background-color: #2C3E91;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f7fa;
+  }
+  
+  .cards {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .total-inventory {
+    background-color: #dbeafe;
+  }
+  
+  .pending-orders {
+    background-color: #fef3c7;
+  }
+  
+  .low-stock-alerts {
+    background-color: #ffe4e6;
+  }
+  
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .card-value {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .charts {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .chart-card {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  

@@ -1,3 +1,76 @@
-<div class="container text-center">
-    <h2>Welcome to Admin Dashboard</h2>
+<div class="admin-dashboard-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+      <li *ngFor="let tab of tabs"
+          (click)="setActiveTab(tab)"
+          [ngClass]="{ 'active': activeTab === tab }">
+        {{ tab }}
+      </li>
+    </ul>
   </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Welcome, Admin</h1>
+
+    <div class="cards">
+      <!-- Total Inventory -->
+      <div class="card total-inventory">
+        <div class="card-title">Total Inventory</div>
+        <div class="card-value">{{ totalInventory }}</div>
+      </div>
+
+      <!-- Pending Orders -->
+      <div class="card pending-orders">
+        <div class="card-title">Pending Orders</div>
+        <div class="card-value">{{ pendingOrders }}</div>
+      </div>
+
+      <!-- Low Stock Alerts -->
+      <div class="card low-stock-alerts">
+        <div class="card-title">Low Stock Alerts</div>
+        <div class="card-value">
+          {{ lowStockList.length > 0 ? lowStockList.length : 'No low stock items' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-card">
+        <h3>Top 3 Sold Products</h3>
+        <apx-chart 
+          [series]="topSoldSeries"
+          [chart]="topSoldChartOptions.chart"
+          [xaxis]="topSoldChartOptions.xaxis"
+          [colors]="topSoldChartOptions.colors"
+          [dataLabels]="topSoldChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+
+      <div class="chart-card">
+        <h3>Top 3 Least Sold Products</h3>
+        <apx-chart 
+          [series]="leastSoldSeries"
+          [chart]="leastSoldChartOptions.chart"
+          [xaxis]="leastSoldChartOptions.xaxis"
+          [colors]="leastSoldChartOptions.colors"
+          [dataLabels]="leastSoldChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+
+      <div class="chart-card">
+        <h3>Profit Trend (Last 10 Days)</h3>
+        <apx-chart 
+          [series]="profitTrendSeries"
+          [chart]="profitTrendChartOptions.chart"
+          [xaxis]="profitTrendChartOptions.xaxis"
+          [colors]="profitTrendChartOptions.colors"
+          [dataLabels]="profitTrendChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,8 @@ from flask_login import login_required, current_user
 from models import db, Product, Inventory, Order, OrderDetails
 from sqlalchemy import func
 from datetime import datetime, timedelta
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
@@ -34,6 +36,7 @@ def get_admin_dashboard_data():
         top_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in top_sold_products]
 
         # 5. Top 3 Least Sold Products
+        # ✅ New (filtered to avoid empty product names)
         least_sold_products = Product.query.filter(Product.sold_quantity > 0).order_by(Product.sold_quantity.asc()).limit(3).all()
         least_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in least_sold_products]
         # 6. Profit Trend Over Last 10 Days
@@ -97,6 +100,58 @@ def get_items_by_zone(zone_name):
 } for product in products_in_zone]
 
         return jsonify({"success": True, "items": items}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# --------- 📈 Future Sales Prediction (based on REAL database sales) ---------
+@admin_bp.route('/future_sales_prediction', methods=['GET'])
+def future_sales_prediction():
+    try:
+        products = Product.query.all()
+        future_predictions = []
+
+        for product in products:
+            # Fetch real order details for this product in the last 10 days
+            today = datetime.utcnow().date()
+            ten_days_ago = today - timedelta(days=9)
+
+            sales_per_day = { (today - timedelta(days=i)): 0 for i in range(10) }
+
+            # Join OrderDetails with Orders to get dates
+            order_details = (
+                db.session.query(OrderDetails, Order)
+                .join(Order, OrderDetails.order_id == Order.id)
+                .filter(OrderDetails.product_id == product.id)
+                .filter(Order.order_date >= ten_days_ago)
+                .all()
+            )
+
+            for detail, order in order_details:
+                order_date = order.order_date.date()
+                if order_date in sales_per_day:
+                    sales_per_day[order_date] += detail.quantity
+
+            # Prepare X (days 1 to 10) and y (sales on each day)
+            X = np.array(range(1, 11)).reshape(-1, 1)
+            y = np.array(list(sales_per_day.values()))
+
+            # Train the Linear Regression model
+            model = LinearRegression()
+            model.fit(X, y)
+
+            # Predict sales for day 11
+            next_day = np.array([[11]])
+            predicted_sales = int(model.predict(next_day)[0])
+            predicted_sales = max(0, predicted_sales)
+
+            future_predictions.append({
+                "name": product.name,
+                "predicted_sales": predicted_sales
+            })
+
+        return jsonify({"success": True, "future_predictions": future_predictions}), 200
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500

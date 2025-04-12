@@ -49,18 +49,20 @@
           [dataLabels]="leastSoldChartOptions.dataLabels">
         </apx-chart>
       </div>
-  
-      <!-- Profit Trend Chart -->
+
       <div class="chart-card">
-        <h3>Profit Trend (Last 10 Days)</h3>
+        <h3>Predicted Future Sales (Next 15 Days)</h3>
         <apx-chart 
-          [series]="profitTrendSeries"
-          [chart]="profitTrendChartOptions.chart"
-          [xaxis]="profitTrendChartOptions.xaxis"
-          [colors]="profitTrendChartOptions.colors"
-          [dataLabels]="profitTrendChartOptions.dataLabels">
+          [series]="futurePredictionSeries"
+          [chart]="futurePredictionChartOptions.chart"
+          [xaxis]="futurePredictionChartOptions.xaxis"
+          [colors]="futurePredictionChartOptions.colors"
+          [dataLabels]="futurePredictionChartOptions.dataLabels"
+          [stroke]="futurePredictionChartOptions.stroke"
+          [yaxis]="futurePredictionChartOptions.yaxis">
         </apx-chart>
-      </div>
+      </div>    
+
     </div>
   </div>
   

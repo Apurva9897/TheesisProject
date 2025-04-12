@@ -1,0 +1,66 @@
+<div class="dashboard-container">
+    <h1>Welcome, Admin</h1>
+  
+    <!-- Top Summary Cards -->
+    <div class="cards">
+      <!-- Total Inventory Card -->
+      <div class="card total-inventory">
+        <div class="card-title">Total Inventory</div>
+        <div class="card-value">{{ totalInventory }}</div>
+      </div>
+  
+      <!-- Pending Orders Card -->
+      <div class="card pending-orders">
+        <div class="card-title">Pending Orders</div>
+        <div class="card-value">{{ pendingOrders }}</div>
+      </div>
+  
+      <!-- Low Stock Alerts Card -->
+      <div class="card low-stock-alerts">
+        <div class="card-title">Low Stock Alerts</div>
+        <div class="card-value">
+          {{ lowStockList.length > 0 ? lowStockList.length : 'No low stock items' }}
+        </div>
+      </div>
+    </div>
+  
+    <!-- Charts Section -->
+    <div class="charts">
+      <!-- Top Sold Products Chart -->
+      <div class="chart-card">
+        <h3>Top 3 Sold Products</h3>
+        <apx-chart 
+          [series]="topSoldSeries"
+          [chart]="topSoldChartOptions.chart"
+          [xaxis]="topSoldChartOptions.xaxis"
+          [colors]="topSoldChartOptions.colors"
+          [dataLabels]="topSoldChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+  
+      <!-- Least Sold Products Chart -->
+      <div class="chart-card">
+        <h3>Top 3 Least Sold Products</h3>
+        <apx-chart 
+          [series]="leastSoldSeries"
+          [chart]="leastSoldChartOptions.chart"
+          [xaxis]="leastSoldChartOptions.xaxis"
+          [colors]="leastSoldChartOptions.colors"
+          [dataLabels]="leastSoldChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+  
+      <!-- Profit Trend Chart -->
+      <div class="chart-card">
+        <h3>Profit Trend (Last 10 Days)</h3>
+        <apx-chart 
+          [series]="profitTrendSeries"
+          [chart]="profitTrendChartOptions.chart"
+          [xaxis]="profitTrendChartOptions.xaxis"
+          [colors]="profitTrendChartOptions.colors"
+          [dataLabels]="profitTrendChartOptions.dataLabels">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+  

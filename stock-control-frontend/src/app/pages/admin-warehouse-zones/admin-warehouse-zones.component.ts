@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-admin-warehouse-zones',
+  standalone: true,
   templateUrl: './admin-warehouse-zones.component.html',
   styleUrls: ['./admin-warehouse-zones.component.css'],
   imports: [CommonModule]

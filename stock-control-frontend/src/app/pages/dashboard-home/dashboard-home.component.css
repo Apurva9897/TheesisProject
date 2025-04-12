@@ -1,0 +1,57 @@
+.dashboard-container {
+    padding: 20px;
+  }
+  
+  .cards {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .card {
+    flex: 1;
+    background: #f5f5f5;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .total-inventory {
+    background-color: #dce9ff; /* Light Blue */
+  }
+  
+  .pending-orders {
+    background-color: #fff4c2; /* Light Yellow */
+  }
+  
+  .low-stock-alerts {
+    background-color: #ffd6d6; /* Light Red */
+  }
+  
+  .card-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .card-value {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .chart-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1 1 30%;
+  }
+  

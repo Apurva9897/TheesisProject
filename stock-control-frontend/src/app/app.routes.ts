@@ -8,18 +8,28 @@ import { ConfirmOrderComponent } from './pages/confirm-order/confirm-order.compo
 import { UpdateProfileComponent } from './pages/client-dashboard/update-profile/update-profile.component';
 import { TrackOrdersComponent } from './pages/track-orders/track-orders.component';
 import { AdminWarehouseZonesComponent } from './pages/admin-warehouse-zones/admin-warehouse-zones.component';
-
+import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'admin-dashboard', component: AdminDashboardComponent },
+     // Admin Dashboard with child routes
+  // ADMIN ROUTES PROPERLY
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,  // (Sidebar + Outlet)
+    children: [
+      { path: '', component: DashboardHomeComponent },  // Default (dashboard cards and graphs)
+      { path: 'warehouse-zones', component: AdminWarehouseZonesComponent }
+    ]
+  },
+
     { path: 'client-dashboard', component: ClientDashboardComponent },
     { path: 'confirm-order', component: ConfirmOrderComponent },
     { path: 'update-profile', component: UpdateProfileComponent }, 
     { path: 'track-orders', component: TrackOrdersComponent },
-    { path: 'admin-dashboard/warehouse-zones', component: AdminWarehouseZonesComponent },   
+   
 ];
 
 @NgModule({

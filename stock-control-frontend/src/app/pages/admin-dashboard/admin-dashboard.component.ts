@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // ✅ Important
 import { NgApexchartsModule } from 'ng-apexcharts'; // ✅ Important
-import { Router } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd   } from '@angular/router';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, NgApexchartsModule, RouterModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
@@ -26,11 +26,21 @@ export class AdminDashboardComponent implements OnInit {
   leastSoldChartOptions: any = {};
   profitTrendChartOptions: any = {};
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      if (this.router.url.includes('warehouse-zones')) {
+        this.activeTab = 'Warehouse Zones';
+      } else {
+        // Default back to Dashboard if user is on /admin-dashboard
+        this.activeTab = 'Dashboard';
+      }
+    }
+  });
+}
 
   setActiveTab(tab: string) {
     if (tab === 'Warehouse Zones') {
-      this.router.navigate(['/admin-warehouse-zones']);
+      this.router.navigate(['warehouse-zones'], { relativeTo: this.route });
     } else {
       this.activeTab = tab;
     }
@@ -82,5 +92,13 @@ export class AdminDashboardComponent implements OnInit {
         }
       });
 
+  }
+
+  getRouterLink(tab: string): string | any[] {
+    if (tab === 'Warehouse Zones') {
+      return ['/admin-dashboard/warehouse-zones']; 
+    }
+    // Otherwise stay at dashboard page
+    return ['/admin-dashboard']; 
   }
 }

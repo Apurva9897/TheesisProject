@@ -34,9 +34,8 @@ def get_admin_dashboard_data():
         top_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in top_sold_products]
 
         # 5. Top 3 Least Sold Products
-        least_sold_products = Product.query.order_by(Product.sold_quantity.asc()).limit(3).all()
+        least_sold_products = Product.query.filter(Product.sold_quantity > 0).order_by(Product.sold_quantity.asc()).limit(3).all()
         least_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in least_sold_products]
-
         # 6. Profit Trend Over Last 10 Days
         today = datetime.utcnow().date()
         ten_days_ago = today - timedelta(days=9)

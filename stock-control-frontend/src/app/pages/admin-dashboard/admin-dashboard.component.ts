@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // ✅ Important
 import { NgApexchartsModule } from 'ng-apexcharts'; // ✅ Important
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -11,7 +11,7 @@ import { NgApexchartsModule } from 'ng-apexcharts'; // ✅ Important
   styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements OnInit {
-  tabs: string[] = ['Dashboard', 'Inventory', 'Orders', 'Warehouse', 'Customers', 'Reports', 'Admin', 'Help'];
+  tabs = ['Dashboard', 'Inventory', 'Orders', 'Customers', 'Reports', 'Help', 'Warehouse Zones'];
   activeTab: string = 'Dashboard';
 
   totalInventory: number = 0;
@@ -26,15 +26,20 @@ export class AdminDashboardComponent implements OnInit {
   leastSoldChartOptions: any = {};
   profitTrendChartOptions: any = {};
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
+  setActiveTab(tab: string) {
+    if (tab === 'Warehouse Zones') {
+      this.router.navigate(['/admin-warehouse-zones']);
+    } else {
+      this.activeTab = tab;
+    }
+  }
+  
   ngOnInit(): void {
     this.fetchDashboardData();
   }
 
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-  }
 
   fetchDashboardData() {
     this.http.get<any>('http://127.0.0.1:5000/admin/overview')

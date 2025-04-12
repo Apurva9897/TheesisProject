@@ -126,7 +126,9 @@ class Product(db.Model):
     # Link to Supplier
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'), nullable=False)
     supplier = db.relationship("Supplier", back_populates="products")
-
+    
+    category = db.Column(db.String(255))  # ✅ You added earlier
+    zone = db.Column(db.String(255))   
     # Link to Inventory
     inventory = db.relationship("Inventory", back_populates="product", uselist=False, cascade="all, delete-orphan")
 

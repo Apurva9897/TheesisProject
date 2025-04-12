@@ -7,6 +7,8 @@ import { ClientDashboardComponent } from './pages/client-dashboard/client-dashbo
 import { ConfirmOrderComponent } from './pages/confirm-order/confirm-order.component';
 import { UpdateProfileComponent } from './pages/client-dashboard/update-profile/update-profile.component';
 import { TrackOrdersComponent } from './pages/track-orders/track-orders.component';
+import { AdminWarehouseZonesComponent } from './pages/admin-warehouse-zones/admin-warehouse-zones.component';
+
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
@@ -16,7 +18,8 @@ export const routes: Routes = [
     { path: 'client-dashboard', component: ClientDashboardComponent },
     { path: 'confirm-order', component: ConfirmOrderComponent },
     { path: 'update-profile', component: UpdateProfileComponent }, 
-    { path: 'track-orders', component: TrackOrdersComponent },    
+    { path: 'track-orders', component: TrackOrdersComponent },
+    { path: 'admin-dashboard/warehouse-zones', component: AdminWarehouseZonesComponent },   
 ];
 
 @NgModule({

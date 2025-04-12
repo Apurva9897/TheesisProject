@@ -4,9 +4,9 @@
     <h2>Admin Panel</h2>
     <ul>
       <li *ngFor="let tab of tabs"
-          (click)="setActiveTab(tab)"
-          [ngClass]="{ 'active': activeTab === tab }">
-        {{ tab }}
+        (click)="setActiveTab(tab)"
+        [ngClass]="{ 'active': activeTab === tab }">
+      {{ tab }}
       </li>
     </ul>
   </div>

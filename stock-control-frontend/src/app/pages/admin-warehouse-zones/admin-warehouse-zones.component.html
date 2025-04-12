@@ -1,0 +1,49 @@
+<div class="warehouse-container">
+    <h2>Warehouse Zones</h2>
+  
+    <!-- Zones Display -->
+    <div class="zones-list">
+      <button *ngFor="let zone of zones" (click)="fetchItemsByZone(zone.zone_name)">
+        {{ zone.zone_name }} - {{ zone.zone_description }}
+      </button>
+    </div>
+  
+    <hr>
+  
+    <!-- Items Display -->
+    <div *ngIf="selectedZone">
+      <h3>Items in {{ selectedZone }}</h3>
+  
+      <div *ngIf="loadingItems">Loading items...</div>
+  
+      <table *ngIf="!loadingItems && items.length > 0" class="items-table">
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td>{{ item.item_id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>
+              <span [ngClass]="{'in-stock': item.status === 'In Stock', 'out-stock': item.status !== 'In Stock'}">
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div *ngIf="!loadingItems && items.length === 0">
+        No items found in this zone.
+      </div>
+    </div>
+  </div>
+  

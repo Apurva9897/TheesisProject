@@ -1,0 +1,42 @@
+.warehouse-container {
+    padding: 20px;
+  }
+  
+  .zones-list {
+    margin-bottom: 20px;
+  }
+  
+  .zones-list button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  .zones-list button:hover {
+    background-color: #d6e0f5;
+  }
+  
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .items-table th, .items-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .in-stock {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .out-stock {
+    color: red;
+    font-weight: bold;
+  }
+  

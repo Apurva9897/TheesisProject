@@ -67,3 +67,37 @@ def get_admin_dashboard_data():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/zones', methods=['GET'])
+def get_zones():
+    try:
+        zones = [
+            {"zone_name": "Zone A", "zone_description": "Small Equipments (Mice, RAM, Keyboards)"},
+            {"zone_name": "Zone B", "zone_description": "Expensive Products (Laptops, MacBooks)"},
+            {"zone_name": "Zone C", "zone_description": "Big Items (Motherboards, CPUs)"},
+            {"zone_name": "Zone D", "zone_description": "Special Conditions (SSD, Batteries, Ethernet Cables)"}
+        ]
+
+        return jsonify({"success": True, "zones": zones}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/items_by_zone/<zone_name>', methods=['GET'])
+def get_items_by_zone(zone_name):
+    try:
+        # Fetch products in that zone
+        products_in_zone = Product.query.filter_by(zone=zone_name).all()
+
+        items = [{
+            "item_id": f"IT-{product.id}",
+            "name": product.name,
+            "category": product.category, 
+            "quantity": product.stock,
+            "status": "In Stock" if product.stock > 0 else "Out of Stock"
+} for product in products_in_zone]
+
+        return jsonify({"success": True, "items": items}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500

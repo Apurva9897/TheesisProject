@@ -1,4 +1,24 @@
+<!-- Top Navbar -->
+<div class="top-navbar d-flex justify-content-end align-items-center">
+  <div class="dropdown">
+    <button 
+      class="btn btn-transparent dropdown-toggle d-flex align-items-center" 
+      type="button" 
+      id="dropdownMenuButton" 
+      data-bs-toggle="dropdown" 
+      aria-expanded="false">
+
+      <img src="assets/user_icon.png" alt="User" class="user-icon" />
+      <span style="margin-left: 8px; color: white;">Account</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+      <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+    </ul>
+  </div>
+</div>
+
 <div class="admin-dashboard-container">
+
   <!-- Sidebar -->
   <div class="sidebar">
     <h2>Admin Panel</h2>

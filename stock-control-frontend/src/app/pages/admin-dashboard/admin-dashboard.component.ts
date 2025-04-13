@@ -25,7 +25,7 @@ export class AdminDashboardComponent implements OnInit {
   topSoldChartOptions: any = {};
   leastSoldChartOptions: any = {};
   profitTrendChartOptions: any = {};
-
+  dropdownOpen = false; 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
       if (this.router.url.includes('warehouse-zones')) {
@@ -101,4 +101,16 @@ export class AdminDashboardComponent implements OnInit {
     // Otherwise stay at dashboard page
     return ['/admin-dashboard']; 
   }
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+  
+  // ✅ Logout method
+  logout() {
+    localStorage.clear();     // Clear admin login info
+    sessionStorage.clear();   // If you are using sessionStorage anywhere
+    this.router.navigate(['/login']); // Redirect to admin-login page
+  }
+  
 }

@@ -28,17 +28,15 @@ def get_admin_dashboard_data():
         pending_orders = db.session.query(Order).filter(Order.status == 'Pending').count()
 
         # 3. Low Stock Alerts (Products with stock <= 5)
-        low_stock_products = Product.query.filter(Product.stock <= 5).all()
+        low_stock_products = Product.query.filter(Product.stock <= 10).all()
         low_stock_list = [{"name": product.name, "remaining": product.stock} for product in low_stock_products]
 
         # 4. Top 3 Most Sold Products
-        top_sold_products = Product.query.order_by(Product.sold_quantity.desc()).limit(3).all()
-        top_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in top_sold_products]
-
-        # 5. Top 3 Least Sold Products
-        # ✅ New (filtered to avoid empty product names)
+        top_sold_products = Product.query.filter(Product.sold_quantity > 0).order_by(Product.sold_quantity.desc()).limit(3).all()
+        top_sold = [{"name": p.name, "sold_quantity": p.sold_quantity} for p in top_sold_products]
+        # Correct Least 3 Sold Products Query
         least_sold_products = Product.query.filter(Product.sold_quantity > 0).order_by(Product.sold_quantity.asc()).limit(3).all()
-        least_sold = [{"name": product.name, "sold_quantity": product.sold_quantity} for product in least_sold_products]
+        least_sold = [{"name": p.name, "sold_quantity": p.sold_quantity} for p in least_sold_products]
         # 6. Profit Trend Over Last 10 Days
         today = datetime.utcnow().date()
         ten_days_ago = today - timedelta(days=9)

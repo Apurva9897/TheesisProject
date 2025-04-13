@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -35,7 +36,7 @@ export class RegisterComponent {
   popupClass = '';
   showPopup = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.registerForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -59,15 +60,31 @@ export class RegisterComponent {
 
   onRegister() {
     if (this.registerForm.valid) {
-      console.log('Registration data:', this.registerForm.value);
-      this.registrationMessage = 'Registration successful!';
-      this.registrationMessageClass = 'success';
-      this.router.navigate(['/login']);
+      this.http.post('http://127.0.0.1:5000/auth/register', this.registerForm.value)
+      .subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.registrationMessage = 'Registration successful!';
+            this.registrationMessageClass = 'success';
+            this.showPopup = true; // ✅ Stay on page, show success message
+          } else {
+            this.registrationMessage = 'Registration failed.';
+            this.registrationMessageClass = 'error';
+          }
+        },
+        error: (error) => {
+          console.error('Registration error:', error);
+          this.registrationMessage = 'Registration failed: ' + (error.error?.message || 'Server error');
+          this.registrationMessageClass = 'error';
+        }
+      });
+      
     } else {
       this.registrationMessage = 'Please fill all fields correctly.';
       this.registrationMessageClass = 'error';
     }
   }
+  
 
   allowOnlyNumbers(event: KeyboardEvent) {
     const pattern = /[0-9]/;

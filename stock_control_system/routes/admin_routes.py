@@ -5,6 +5,9 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
 import numpy as np
+from flask import request
+from models import SupplierOrder, SupplierOrderDetails
+from models import Supplier
 
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
@@ -89,18 +92,22 @@ def get_items_by_zone(zone_name):
         # Fetch products in that zone
         products_in_zone = Product.query.filter_by(zone=zone_name).all()
 
-        items = [{
-            "item_id": f"IT-{product.id}",
-            "name": product.name,
-            "category": product.category, 
-            "quantity": product.stock,
-            "status": "In Stock" if product.stock > 0 else "Out of Stock"
-} for product in products_in_zone]
+        items = [
+            {
+                "item_id": f"IT-{product.id}",
+                "name": product.name,
+                "category": product.category,
+                "quantity": product.stock,
+                "status": "In Stock" if product.stock > 0 else "Out of Stock",
+                "shelf": f"Shelf {index + 1}"  # 🆕 Add shelf label based on index
+            } for index, product in enumerate(products_in_zone)
+        ]
 
         return jsonify({"success": True, "items": items}), 200
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 
 # --------- 📈 Future Sales Prediction (based on REAL database sales) ---------
@@ -153,3 +160,122 @@ def future_sales_prediction():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/products_by_supplier_name/<string:supplier_name>', methods=['GET'])
+#@login_required
+def get_products_by_supplier_name(supplier_name):
+    try:
+        supplier = Supplier.query.filter_by(name=supplier_name).first()
+        if not supplier:
+            return jsonify({"success": False, "error": "Supplier not found"}), 404
+
+        products = Product.query.filter_by(supplier_id=supplier.id).all()
+        product_list = [{
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "price": float(p.price),
+            "stock": p.stock,
+            "zone": p.zone
+        } for p in products]
+
+        return jsonify({"success": True, "products": product_list}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@admin_bp.route('/validate_shelf_capacity', methods=['POST'])
+@login_required
+def validate_shelf_capacity():
+    try:
+        data = request.get_json()
+        product_id = data.get('product_id')
+        requested_quantity = data.get('requested_quantity')
+
+        if not product_id or requested_quantity is None:
+            return jsonify({"success": False, "message": "Missing product_id or requested_quantity"}), 400
+
+        product = Product.query.get(product_id)
+        if not product:
+            return jsonify({"success": False, "message": "Product not found"}), 404
+
+        current_stock = product.stock
+        shelf_capacity = 30
+        available_space = shelf_capacity - current_stock
+
+        if requested_quantity > available_space:
+            return jsonify({
+                "success": False,
+                "message": f"Cannot add {requested_quantity} items. Shelf capacity is {shelf_capacity} and already has {current_stock}, only {available_space} more can be added."
+            }), 400
+
+        return jsonify({
+            "success": True,
+            "message": "Quantity is within shelf limits."
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/predict_sales_by_product', methods=['POST'])
+#@login_required
+def predict_sales_by_product():
+    try:
+        data = request.get_json()
+        product_name = data.get('product_name')
+        if not product_name:
+            return jsonify({"success": False, "message": "Product name missing"}), 400
+
+        today = datetime.utcnow().date()
+        fifteen_days_ago = today - timedelta(days=14)
+
+        # Get past 15 days of sales for the product
+        order_details = (
+            db.session.query(OrderDetails, Order)
+            .join(Order, OrderDetails.order_id == Order.id)
+            .join(Product, Product.id == OrderDetails.product_id)
+            .filter(Product.name == product_name)
+            .filter(Order.order_date >= fifteen_days_ago)
+            .all()
+        )
+
+        sales_per_day = { (today - timedelta(days=i)): 0 for i in range(15) }
+
+        for detail, order in order_details:
+            order_date = order.order_date.date()
+            if order_date in sales_per_day:
+                sales_per_day[order_date] += detail.quantity
+
+        # Prepare X and y
+        X = np.array(range(1, 16)).reshape(-1, 1)
+        y = np.array(list(sales_per_day.values()))
+
+        model = LinearRegression()
+        model.fit(X, y)
+
+        # Predict next 90 days
+        future_days = np.array(range(16, 106)).reshape(-1, 1)
+        predictions = model.predict(future_days)
+        predictions = [max(0, int(round(p))) for p in predictions]
+
+        future_sales = [{"day": i + 1, "quantity": qty} for i, qty in enumerate(predictions)]
+
+        return jsonify({
+            "success": True,
+            "product": product_name,
+            "predicted_sales": future_sales
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/get_all_product_names', methods=['GET'])
+def get_all_product_names():
+    try:
+        products = Product.query.all()
+        names = [p.name for p in products]
+        return jsonify({"success": True, "names": names}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+

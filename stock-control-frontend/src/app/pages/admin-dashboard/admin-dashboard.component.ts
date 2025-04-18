@@ -11,7 +11,7 @@ import { Router, RouterModule, ActivatedRoute, NavigationEnd   } from '@angular/
   styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements OnInit {
-  tabs = ['Dashboard', 'Inventory', 'Orders', 'Customers', 'Reports', 'Help', 'Warehouse Zones'];
+  tabs = ['Dashboard', 'Suppliers', 'Reports', 'Warehouse Zones'];
   activeTab: string = 'Dashboard';
 
   totalInventory: number = 0;

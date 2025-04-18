@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts'; // ✅ For Charts
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, NgApexchartsModule, FormsModule],
   templateUrl: './dashboard-home.component.html',
   styleUrl: './dashboard-home.component.css'
 })
@@ -26,13 +27,27 @@ export class DashboardHomeComponent implements OnInit {
 
   futurePredictionSeries: any = [];
   futurePredictionChartOptions: any = {};
-
+  productNames: string[] = [];
+  selectedProductName: string = '';
+  futureSalesByProductSeries: any[] = [];
+  futureSalesByProductChartOptions: any = {};
+  
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.fetchDashboardData();
     this.fetchFuturePredictions();
-  }
+     // 🆕 Get all product names for dropdown
+     this.http.get<any>('http://127.0.0.1:5000/admin/get_all_product_names')
+     .subscribe({
+       next: (res) => {
+         if (res.success) this.productNames = res.names;
+       },
+       error: (err) => {
+         console.error('Failed to fetch product names', err);
+       }
+     });
+ }
 
   fetchDashboardData() {
     this.http.get<any>('http://127.0.0.1:5000/admin/overview')
@@ -155,7 +170,52 @@ this.leastSoldChartOptions = {
             console.error('Failed to fetch future predictions:', error);
           }
         });
-    }  
+    } 
+    
+    fetchPredictionByProduct(productName: string) {
+      if (!productName) return;
+    
+      const url = 'http://127.0.0.1:5000/admin/predict_sales_by_product';
+    
+      this.http.post<any>(url, { product_name: productName }, { withCredentials: true }).subscribe({
+        next: (response) => {
+          console.log("✅ Backend Response:", response); // debug output
+    
+          if (response.success && response.predictions?.length) {
+            this.futureSalesByProductSeries = [{
+              name: productName,
+              data: response.predictions.map((p: any) => p.quantity)  // ✅ fix key from 'sales' to 'quantity'
+            }];
+    
+            this.futureSalesByProductChartOptions = {
+              chart: { type: 'line', height: 300 },
+              xaxis: {
+                categories: response.predictions.map((p: any) => `Day ${p.day}`),  // ✅ fix from 'p.date'
+                title: { text: 'Day' }
+              },
+              yaxis: {
+                title: { text: 'Predicted Quantity' }
+              },
+              colors: ['#FF9800'],
+              dataLabels: { enabled: true },
+              stroke: { curve: 'smooth' },
+              title: {
+                text: `Future Sales for ${productName} (90 Days)`,
+                align: 'center',
+                style: { fontSize: '18px', fontWeight: 'bold' }
+              }
+            };
+          } else {
+            console.warn("⚠️ No predictions found for", productName);
+            this.futureSalesByProductSeries = [];
+          }
+        },
+        error: (err) => {
+          console.error("❌ API call failed:", err);
+        }
+      });
+    }
+    
   }
      
 

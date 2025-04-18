@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 export class UpdateProfileComponent implements OnInit {
   profileForm!: FormGroup;
   originalData: any = {};
+  phoneError = false;
+  alertMessage = '';
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {}
 
@@ -28,10 +30,9 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   loadProfile() {
-    const email = sessionStorage.getItem('user_email') || localStorage.getItem('user_email'); // assuming you saved email on login
+    const email = sessionStorage.getItem('user_email') || localStorage.getItem('user_email');
 
     if (!email) {
-      alert('No user found. Please login again.');
       this.router.navigate(['/login']);
       return;
     }
@@ -41,27 +42,22 @@ export class UpdateProfileComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.originalData = response.customer;
-            this.profileForm.patchValue({
-              name: this.originalData.name,
-              email: this.originalData.email,
-              address: this.originalData.address,
-              phone: this.originalData.phone
-            });
-          } else {
-            alert('Failed to load profile.');
+            this.profileForm.patchValue(this.originalData);
           }
-        },
-        error: () => {
-          alert('Error loading profile.');
         }
       });
   }
 
+  validatePhone() {
+    const phone = this.profileForm.get('phone')?.value;
+    this.phoneError = phone && phone.length > 10;
+  }
+
   updateProfile() {
-    const email = this.originalData.email;
+    if (this.phoneError) return;
 
     const updatedData = {
-      email: email,
+      email: this.originalData.email,
       address: this.profileForm.get('address')?.value,
       phone: this.profileForm.get('phone')?.value
     };
@@ -70,14 +66,9 @@ export class UpdateProfileComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            alert('Profile updated successfully.');
-            this.router.navigate(['/client-dashboard']); // ✅ redirect back to dashboard after updating
-          } else {
-            alert('Profile update failed.');
+            this.alertMessage = '🎉 Changes saved successfully!';
+            setTimeout(() => this.alertMessage = '', 3000); // hide after 3s
           }
-        },
-        error: () => {
-          alert('Error updating profile.');
         }
       });
   }
@@ -87,5 +78,14 @@ export class UpdateProfileComponent implements OnInit {
       address: this.originalData.address,
       phone: this.originalData.phone
     });
+  }
+
+  goHome() {
+    this.router.navigate(['/client-dashboard']);
+  }
+
+  logout() {
+    sessionStorage.clear();
+    this.router.navigate(['/login']);
   }
 }

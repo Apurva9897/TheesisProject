@@ -53,3 +53,9 @@ button.mat-raised-button.mat-accent {
   background-color: #ff4081; /* Pink - Material accent */
   color: white;
 }
+
+.error {
+  color: red;
+  margin-top: 10px;
+  font-size: 13px;
+}

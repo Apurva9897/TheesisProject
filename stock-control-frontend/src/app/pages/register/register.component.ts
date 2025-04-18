@@ -35,6 +35,7 @@ export class RegisterComponent {
   popupMessage = '';
   popupClass = '';
   showPopup = false;
+  phoneLengthError = '';
 
   constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.registerForm = this.fb.group({
@@ -42,9 +43,11 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       role: ['', Validators.required],
+      countryCode: ['+44', Validators.required],   // ✅ Add country code
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       address: ['', Validators.required]
     });
+    
   }
 
   checkPasswordStrength() {
@@ -60,13 +63,24 @@ export class RegisterComponent {
 
   onRegister() {
     if (this.registerForm.valid) {
-      this.http.post('http://127.0.0.1:5000/auth/register', this.registerForm.value)
-      .subscribe({
-        next: (response: any) => {
+      const formValue = this.registerForm.value;
+      const submissionData = {
+        ...formValue,
+        phone: `${formValue.countryCode}${formValue.phone}`
+      };
+
+      this.http.post('http://127.0.0.1:5000/auth/register', submissionData)
+        .subscribe({
+          next: (response: any) => {
           if (response.success) {
             this.registrationMessage = 'Registration successful!';
             this.registrationMessageClass = 'success';
-            this.showPopup = true; // ✅ Stay on page, show success message
+            this.showPopup = true; 
+            setTimeout(() => {
+              this.registrationMessage = '🎉 Registration Successful!';
+              this.registrationMessageClass = 'alert alert-success alert-dismissible fade show';
+
+            }, 100);
           } else {
             this.registrationMessage = 'Registration failed.';
             this.registrationMessageClass = 'error';
@@ -87,14 +101,31 @@ export class RegisterComponent {
   
 
   allowOnlyNumbers(event: KeyboardEvent) {
-    const pattern = /[0-9]/;
     const inputChar = String.fromCharCode(event.charCode);
-    if (!pattern.test(inputChar)) {
+    const currentValue = this.registerForm.get('phone')?.value || '';
+  
+    // prevent non-digit input
+    if (!/[0-9]/.test(inputChar)) {
       event.preventDefault();
     }
+  
+    // prevent input if more than 10 digits
+    if (currentValue.length >= 10) {
+      this.phoneLengthError = 'Phone number cannot exceed 10 digits';
+      event.preventDefault();  // disallow further typing
+    } else {
+      this.phoneLengthError = '';  // clear error
+    }
   }
+  
 
   goToLogin() {
     this.router.navigate(['/login']);
   }
+
+  dismissAlert() {
+    this.registrationMessage = '';
+    this.registrationMessageClass = '';
+  }
+  
 }

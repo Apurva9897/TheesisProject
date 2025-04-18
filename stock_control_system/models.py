@@ -145,3 +145,32 @@ class Inventory(db.Model):
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     product = db.relationship("Product", back_populates="inventory")
+
+# -------------------- Supplier Order Model --------------------
+class SupplierOrder(db.Model):
+    __tablename__ = 'supplier_orders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'), nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admins.id', ondelete='CASCADE'), nullable=False)
+    order_date = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), default='Pending')  # ✅ Pending or Delivered
+    total_amount = db.Column(db.DECIMAL(10, 2), default=0)
+
+    supplier = db.relationship('Supplier', backref='supplier_orders')
+    admin = db.relationship('Admin', backref='supplier_orders')
+    order_details = db.relationship('SupplierOrderDetails', back_populates='supplier_order', cascade='all, delete-orphan')
+
+# -------------------- Supplier Order Details Model --------------------
+class SupplierOrderDetails(db.Model):
+    __tablename__ = 'supplier_order_details'
+
+    id = db.Column(db.Integer, primary_key=True)
+    supplier_order_id = db.Column(db.Integer, db.ForeignKey('supplier_orders.id', ondelete='CASCADE'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='CASCADE'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.DECIMAL(10, 2), nullable=False)
+    subtotal = db.Column(db.DECIMAL(10, 2), nullable=False)
+
+    supplier_order = db.relationship('SupplierOrder', back_populates='order_details')
+    product = db.relationship('Product')

@@ -62,7 +62,32 @@
           [yaxis]="futurePredictionChartOptions.yaxis">
         </apx-chart>
       </div>    
+      <!-- Product-wise Future Sales Graph -->
+<div class="chart-card">
+  <h3>Product-wise Future Sales (Next 90 Days)</h3>
 
+  <label for="productSelect">Select Product:</label>
+  <select [(ngModel)]="selectedProductName" id="productSelect">
+    <option value="">Select a product</option>
+    <option *ngFor="let name of productNames" [value]="name">{{ name }}</option>
+  </select>
+  <button (click)="fetchPredictionByProduct(selectedProductName)">Generate</button>
+
+  <!-- ONLY render chart if data is present -->
+  <apx-chart
+    *ngIf="futureSalesByProductSeries.length"
+    [series]="futureSalesByProductSeries"
+    [chart]="futureSalesByProductChartOptions.chart"
+    [xaxis]="futureSalesByProductChartOptions.xaxis"
+    [colors]="futureSalesByProductChartOptions.colors"
+    [dataLabels]="futureSalesByProductChartOptions.dataLabels"
+    [stroke]="futureSalesByProductChartOptions.stroke"
+    [yaxis]="futureSalesByProductChartOptions.yaxis"
+    [title]="futureSalesByProductChartOptions.title">
+  </apx-chart>
+</div>
+
+    
     </div>
   </div>
   

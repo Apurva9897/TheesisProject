@@ -1,0 +1,55 @@
+<div class="supplier-order-container">
+  <h2>Supplier Orders</h2>
+
+  <div class="form-group">
+    <label for="supplier">Select Supplier:</label>
+    <select class="form-control" [(ngModel)]="selectedSupplier" (change)="onSupplierSelect()">
+      <option value="">Choose a supplier</option>
+      <option *ngFor="let name of suppliers" [value]="name">{{ name }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="products.length > 0" class="product-table mt-4">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Item ID</th>
+          <th>Name</th>
+          <th>Zone</th>
+          <th>Shelf</th>
+          <th>Current Stock</th>
+          <th>Qty to Order</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.item_id }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.zone }}</td>
+          <td>{{ product.shelf }}</td>
+          <td>{{ product.stock }}</td>
+          <td>
+            <input
+              type="number"
+              [(ngModel)]="product.quantity_to_order"
+              (change)="onQuantityChange(product)"
+              [min]="1"
+              [max]="product.max_quantity_allowed"
+              class="form-control"
+            />
+            <div *ngIf="product.limitExceeded" class="text-danger small mt-1">
+              ❌ Cannot add more items as Shelf Capacity is 30 only!
+            </div>
+          </td>
+          
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="order-summary" *ngIf="products.length > 0">
+    <p><strong>Total Items:</strong> {{ orderSummary.totalItems }}</p>
+    <p><strong>Total Quantity:</strong> {{ orderSummary.totalQuantity }}</p>
+    <button class="btn btn-primary" (click)="submitAllOrders()">Submit All Orders</button>
+  </div>
+</div>

@@ -40,3 +40,47 @@
     color: #28a745;
   }
   
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .badge {
+    background-color: #ffc107;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+  
+  .status-tracker {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .step {
+    flex: 1;
+    position: relative;
+    color: #bbb;
+    font-size: 12px;
+  }
+  
+  .circle {
+    width: 12px;
+    height: 12px;
+    margin: 0 auto 8px auto;
+    border-radius: 50%;
+    background-color: #ddd;
+  }
+  
+  .filled {
+    background-color: #28a745;
+  }
+  
+  .step.active {
+    color: #28a745;
+  }
+  

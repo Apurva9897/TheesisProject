@@ -12,12 +12,14 @@ from routes.customer_dashboard_routes import customer_dashboard_bp
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
-# Setup CORS
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:4200"])
 
 app.config.from_object(Config)
-
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "http://localhost:4200"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 # Initialize database
 db.init_app(app)
 migrate = Migrate(app, db) 

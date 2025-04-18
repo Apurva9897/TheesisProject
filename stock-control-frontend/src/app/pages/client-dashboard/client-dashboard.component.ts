@@ -28,6 +28,7 @@ export class ClientDashboardComponent implements OnInit {
   selectedStock: string = '';
   selectedPrice: string = '';
   dropdownOpen = false;
+  
 
   customerName = 'Universal Computer Warehouse';
   
@@ -218,5 +219,25 @@ signOut() {
 goToTrackOrders() {
   this.router.navigate(['/track-orders']);
 }
+
+viewBasket(): void {
+  const itemsInBasket = this.products
+    .filter(p => this.orderQuantities[p.id] > 0)
+    .map(p => `${p.name} - Quantity: ${this.orderQuantities[p.id]}`)
+    .join('<br>');
+
+  const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+  if (alertPlaceholder) {
+    alertPlaceholder.innerHTML = ''; // clear previous alerts
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div class="alert alert-info alert-dismissible" role="alert" style="max-height: 300px; overflow-y: auto;">
+        <div><strong>Your Basket:</strong><br>${itemsInBasket || 'No items in basket.'}</div>
+        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="document.getElementById('liveAlertPlaceholder').innerHTML = '';">Close</button>
+      </div>`;
+    alertPlaceholder.append(wrapper);
+  }
+}
+
   
 }

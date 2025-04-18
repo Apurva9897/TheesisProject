@@ -40,10 +40,26 @@
       </mat-form-field>
 
       <!-- Phone -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Phone Number</mat-label>
-        <input matInput formControlName="phone" maxlength="10" (keypress)="allowOnlyNumbers($event)" placeholder="Enter phone number" />
-      </mat-form-field>
+      <!-- Country Code + Phone Number -->
+<div class="d-flex gap-2 full-width">
+  <mat-form-field appearance="outline" style="width: 30%;">
+    <mat-label>Code</mat-label>
+    <mat-select formControlName="countryCode">
+      <mat-option value="+91">+91 </mat-option>
+      <mat-option value="+44">+44 </mat-option>
+      <mat-option value="+1">+1 </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="flex: 1;">
+    <mat-label>Phone Number</mat-label>
+    <input matInput formControlName="phone" maxlength="10" (keypress)="allowOnlyNumbers($event)" placeholder="Enter phone number" />
+  </mat-form-field>
+</div>
+
+<!-- Error for Phone -->
+<div *ngIf="phoneLengthError" class="error">{{ phoneLengthError }}</div>
+
 
       <!-- Address -->
       <mat-form-field appearance="outline" class="full-width">
@@ -63,8 +79,10 @@
     </form>
 
     <!-- Registration Message -->
-    <div *ngIf="registrationMessage" class="register-message" [ngClass]="registrationMessageClass">
+    <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" role="alert">
       {{ registrationMessage }}
+      <button type="button" class="btn-close" aria-label="Close" (click)="dismissAlert()"></button>
     </div>
+    
   </div>
 </div>

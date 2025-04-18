@@ -9,6 +9,8 @@ import { UpdateProfileComponent } from './pages/client-dashboard/update-profile/
 import { TrackOrdersComponent } from './pages/track-orders/track-orders.component';
 import { AdminWarehouseZonesComponent } from './pages/admin-warehouse-zones/admin-warehouse-zones.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
+import { SupplierOrderComponent } from './pages/supplier-order/supplier-order.component';
+
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
@@ -21,7 +23,8 @@ export const routes: Routes = [
     component: AdminDashboardComponent,  // (Sidebar + Outlet)
     children: [
       { path: '', component: DashboardHomeComponent },  // Default (dashboard cards and graphs)
-      { path: 'warehouse-zones', component: AdminWarehouseZonesComponent }
+      { path: 'warehouse-zones', component: AdminWarehouseZonesComponent },
+      { path: 'suppliers', component: SupplierOrderComponent }
     ]
   },
 

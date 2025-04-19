@@ -181,17 +181,39 @@ this.leastSoldChartOptions = {
         next: (response) => {
           console.log("✅ Backend Response:", response); // debug output
     
-          if (response.success && response.predictions?.length) {
+          // 🔥 Fix: Change predictions → predicted_sales
+          if (response.success && response.predicted_sales?.length) {
             this.futureSalesByProductSeries = [{
               name: productName,
-              data: response.predictions.map((p: any) => p.quantity)  // ✅ fix key from 'sales' to 'quantity'
+              data: response.predicted_sales.map((p: any) => p.quantity) // quantity only
             }];
     
             this.futureSalesByProductChartOptions = {
-              chart: { type: 'line', height: 300 },
+              chart: { 
+                type: 'line', 
+                height: 300,
+                toolbar: {
+                  show: true,
+                  offsetY: 10,
+                  tools: {
+                    download: true,
+                    selection: true,
+                    zoom: true,
+                    zoomin: true,
+                    zoomout: true,
+                    pan: true,
+                    reset: true
+                  },
+                  autoSelected: 'zoom'
+                }
+              },
               xaxis: {
-                categories: response.predictions.map((p: any) => `Day ${p.day}`),  // ✅ fix from 'p.date'
-                title: { text: 'Day' }
+                categories: response.predicted_sales.map((p: any) => `Day ${p.day}`),
+                title: { text: 'Day' },
+                labels: {
+                  rotate: -45,
+                  style: { fontSize: '10px' }
+                }
               },
               yaxis: {
                 title: { text: 'Predicted Quantity' }
@@ -199,14 +221,27 @@ this.leastSoldChartOptions = {
               colors: ['#FF9800'],
               dataLabels: { enabled: true },
               stroke: { curve: 'smooth' },
+              responsive: [
+                {
+                  breakpoint: 768,
+                  options: {
+                    chart: { height: 400 },
+                    xaxis: {
+                      labels: { rotate: -60, style: { fontSize: '9px' } }
+                    }
+                  }
+                }
+              ],
               title: {
-                text: `Future Sales for ${productName} (90 Days)`,
+                text: `Future Sales for ${productName} (30 Days)`,
                 align: 'center',
                 style: { fontSize: '18px', fontWeight: 'bold' }
               }
             };
+            
+            
           } else {
-            console.warn("⚠️ No predictions found for", productName);
+            console.warn("⚠️ No predicted sales found for", productName);
             this.futureSalesByProductSeries = [];
           }
         },

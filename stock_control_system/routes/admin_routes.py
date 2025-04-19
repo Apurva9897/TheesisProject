@@ -255,7 +255,7 @@ def predict_sales_by_product():
         model.fit(X, y)
 
         # Predict next 90 days
-        future_days = np.array(range(16, 106)).reshape(-1, 1)
+        future_days = np.array(range(16, 46)).reshape(-1, 1)
         predictions = model.predict(future_days)
         predictions = [max(0, int(round(p))) for p in predictions]
 

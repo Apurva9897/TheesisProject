@@ -62,32 +62,41 @@
           [yaxis]="futurePredictionChartOptions.yaxis">
         </apx-chart>
       </div>    
-      <!-- Product-wise Future Sales Graph -->
-<div class="chart-card">
-  <h3>Product-wise Future Sales (Next 90 Days)</h3>
-
-  <label for="productSelect">Select Product:</label>
-  <select [(ngModel)]="selectedProductName" id="productSelect">
-    <option value="">Select a product</option>
-    <option *ngFor="let name of productNames" [value]="name">{{ name }}</option>
-  </select>
-  <button (click)="fetchPredictionByProduct(selectedProductName)">Generate</button>
-
-  <!-- ONLY render chart if data is present -->
-  <apx-chart
-    *ngIf="futureSalesByProductSeries.length"
-    [series]="futureSalesByProductSeries"
-    [chart]="futureSalesByProductChartOptions.chart"
-    [xaxis]="futureSalesByProductChartOptions.xaxis"
-    [colors]="futureSalesByProductChartOptions.colors"
-    [dataLabels]="futureSalesByProductChartOptions.dataLabels"
-    [stroke]="futureSalesByProductChartOptions.stroke"
-    [yaxis]="futureSalesByProductChartOptions.yaxis"
-    [title]="futureSalesByProductChartOptions.title">
-  </apx-chart>
-</div>
-
-    
+      <div class="chart-card">
+        <h3>Product-wise Future Sales (Next 30 Days)</h3>
+      
+        <div class="form-row d-flex align-items-center gap-3 mb-3 flex-wrap">
+          <div class="form-group mb-0">
+            <label for="productSelect" class="fw-bold">Select Product:</label>
+            <select class="form-control" [(ngModel)]="selectedProductName" id="productSelect">
+              <option value="">Select a product</option>
+              <option *ngFor="let name of productNames" [value]="name">{{ name }}</option>
+            </select>
+          </div>
+        
+          <div class="form-group mb-0">
+            <label class="invisible d-block">Generate</label>
+            <button class="btn btn-primary w-100" (click)="fetchPredictionByProduct(selectedProductName)">
+              Generate
+            </button>
+          </div>
+        </div>
+        
+      
+        <!-- Chart -->
+        <apx-chart
+          *ngIf="futureSalesByProductSeries.length"
+          [series]="futureSalesByProductSeries"
+          [chart]="futureSalesByProductChartOptions.chart"
+          [xaxis]="futureSalesByProductChartOptions.xaxis"
+          [colors]="futureSalesByProductChartOptions.colors"
+          [dataLabels]="futureSalesByProductChartOptions.dataLabels"
+          [stroke]="futureSalesByProductChartOptions.stroke"
+          [yaxis]="futureSalesByProductChartOptions.yaxis"
+          [title]="futureSalesByProductChartOptions.title">
+        </apx-chart>
+      </div>
+      
     </div>
   </div>
   

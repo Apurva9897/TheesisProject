@@ -279,3 +279,90 @@ def get_all_product_names():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+@admin_bp.route('/get_supplier_order_reports', methods=['GET'])
+def get_supplier_order_reports():
+    try:
+        supplier_name = request.args.get('supplier_name')  # Optional
+        start_date = request.args.get('start_date')         # Optional: "2025-04-01"
+        end_date = request.args.get('end_date')             # Optional: "2025-04-20"
+
+        query = db.session.query(SupplierOrder, Supplier).join(Supplier, SupplierOrder.supplier_id == Supplier.id)
+
+        if supplier_name and supplier_name != "All":
+            query = query.filter(Supplier.name == supplier_name)
+
+        if start_date:
+            query = query.filter(SupplierOrder.order_date >= start_date)
+        if end_date:
+            query = query.filter(SupplierOrder.order_date <= end_date)
+
+        orders = query.order_by(SupplierOrder.order_date.desc()).all()
+
+        result = []
+        for supplier_order, supplier in orders:
+            result.append({
+                "order_id": f"SO-{supplier_order.id}",
+                "supplier": supplier.name,
+                "order_date": supplier_order.order_date.strftime("%b %d, %Y"),
+                "total_cost": float(supplier_order.total_amount),
+                "status": supplier_order.status,
+                "products_count": len(supplier_order.order_details)
+            })
+
+        return jsonify({"success": True, "orders": result}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@admin_bp.route('/submit_supplier_orders', methods=['POST'])
+def submit_supplier_orders():
+    try:
+        data = request.get_json()
+        supplier_name = data.get('supplier_name')
+        items = data.get('items', [])
+
+        if not supplier_name or not items:
+            return jsonify({"success": False, "message": "Missing supplier name or items"}), 400
+
+        # Get supplier object
+        supplier = Supplier.query.filter_by(name=supplier_name).first()
+        if not supplier:
+            return jsonify({"success": False, "message": "Supplier not found"}), 404
+
+        # Mock admin_id (replace with real admin logic later)
+        admin_id = 1  # Assuming 1 is your default admin for now
+
+        # Calculate total amount
+        total_amount = sum(item['unit_price'] * item['quantity'] for item in items)
+
+        # Create SupplierOrder
+        supplier_order = SupplierOrder(
+            supplier_id=supplier.id,
+            admin_id=admin_id,
+            total_amount=total_amount,
+            status='Pending'
+        )
+        db.session.add(supplier_order)
+        db.session.flush()  # Get the ID before committing
+
+        # Add each item
+        for item in items:
+            detail = SupplierOrderDetails(
+                supplier_order_id=supplier_order.id,
+                product_id=item['product_id'],
+                quantity=item['quantity'],
+                unit_price=item['unit_price'],
+                subtotal=item['unit_price'] * item['quantity']
+            )
+            db.session.add(detail)
+
+        db.session.commit()
+
+        return jsonify({"success": True, "message": "Supplier order submitted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+

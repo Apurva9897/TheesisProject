@@ -251,6 +251,25 @@ this.leastSoldChartOptions = {
       });
     }
     
+    lowStockAlertVisible: boolean = false;  // controls alert display
+
+showLowStockAlert(): void {
+  if (!this.lowStockList.length) {
+    this.lowStockAlertMessage = "✅ All products are sufficiently stocked!";
+  } else {
+    this.lowStockAlertMessage = this.lowStockList.map(item => 
+      `• ${item.name}: ${item.stock} left`).join('<br>');
+  }
+
+  this.lowStockAlertVisible = true;
+
+  // Auto-hide alert after 6 seconds (optional)
+  setTimeout(() => this.lowStockAlertVisible = false, 9000);
+}
+
+lowStockAlertMessage: string = "";
+
+
   }
      
 

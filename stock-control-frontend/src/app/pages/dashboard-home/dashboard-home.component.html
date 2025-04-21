@@ -1,102 +1,122 @@
 <div class="dashboard-container">
-    <h1>Welcome, Admin</h1>
-  
-    <!-- Top Summary Cards -->
-    <div class="cards">
-      <!-- Total Inventory Card -->
-      <div class="card total-inventory">
-        <div class="card-title">Total Inventory</div>
-        <div class="card-value">{{ totalInventory }}</div>
-      </div>
-  
-      <!-- Pending Orders Card -->
-      <div class="card pending-orders">
-        <div class="card-title">Pending Orders</div>
-        <div class="card-value">{{ pendingOrders }}</div>
-      </div>
-  
-      <!-- Low Stock Alerts Card -->
-      <div class="card low-stock-alerts">
-        <div class="card-title">Low Stock Alerts</div>
-        <div class="card-value">
-          {{ lowStockList.length > 0 ? lowStockList.length : 'No low stock items' }}
-        </div>
-      </div>
-    </div>
-  
-    <!-- Charts Section -->
-    <div class="charts">
-      <!-- Top Sold Products Chart -->
-      <div class="chart-card">
-        <h3>Top 3 Sold Products</h3>
-        <apx-chart 
-          [series]="topSoldSeries"
-          [chart]="topSoldChartOptions.chart"
-          [xaxis]="topSoldChartOptions.xaxis"
-          [colors]="topSoldChartOptions.colors"
-          [dataLabels]="topSoldChartOptions.dataLabels">
-        </apx-chart>
-      </div>
-  
-      <!-- Least Sold Products Chart -->
-      <div class="chart-card">
-        <h3>Top 3 Least Sold Products</h3>
-        <apx-chart 
-          [series]="leastSoldSeries"
-          [chart]="leastSoldChartOptions.chart"
-          [xaxis]="leastSoldChartOptions.xaxis"
-          [colors]="leastSoldChartOptions.colors"
-          [dataLabels]="leastSoldChartOptions.dataLabels">
-        </apx-chart>
-      </div>
+  <h1>Welcome, Admin</h1>
 
-      <div class="chart-card">
-        <h3>Predicted Future Sales (Next 15 Days)</h3>
-        <apx-chart 
-          [series]="futurePredictionSeries"
-          [chart]="futurePredictionChartOptions.chart"
-          [xaxis]="futurePredictionChartOptions.xaxis"
-          [colors]="futurePredictionChartOptions.colors"
-          [dataLabels]="futurePredictionChartOptions.dataLabels"
-          [stroke]="futurePredictionChartOptions.stroke"
-          [yaxis]="futurePredictionChartOptions.yaxis">
-        </apx-chart>
-      </div>    
-      <div class="chart-card">
-        <h3>Product-wise Future Sales (Next 30 Days)</h3>
-      
-        <div class="form-row d-flex align-items-center gap-3 mb-3 flex-wrap">
-          <div class="form-group mb-0">
-            <label for="productSelect" class="fw-bold">Select Product:</label>
-            <select class="form-control" [(ngModel)]="selectedProductName" id="productSelect">
-              <option value="">Select a product</option>
-              <option *ngFor="let name of productNames" [value]="name">{{ name }}</option>
-            </select>
-          </div>
-        
-          <div class="form-group mb-0">
-            <label class="invisible d-block">Generate</label>
-            <button class="btn btn-primary w-100" (click)="fetchPredictionByProduct(selectedProductName)">
-              Generate
-            </button>
-          </div>
-        </div>
-        
-      
-        <!-- Chart -->
-        <apx-chart
-          *ngIf="futureSalesByProductSeries.length"
-          [series]="futureSalesByProductSeries"
-          [chart]="futureSalesByProductChartOptions.chart"
-          [xaxis]="futureSalesByProductChartOptions.xaxis"
-          [colors]="futureSalesByProductChartOptions.colors"
-          [dataLabels]="futureSalesByProductChartOptions.dataLabels"
-          [stroke]="futureSalesByProductChartOptions.stroke"
-          [yaxis]="futureSalesByProductChartOptions.yaxis"
-          [title]="futureSalesByProductChartOptions.title">
-        </apx-chart>
+  <!-- Bootstrap SVG icons for alert (put this ONCE at the top of the dashboard-container) -->
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="info-fill" viewBox="0 0 16 16">
+    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+  </symbol>
+</svg>
+
+
+ <!-- 🔵 Low Stock Alert Message (Compact and Closable) -->
+<div *ngIf="lowStockAlertVisible" class="alert alert-primary d-flex justify-content-between align-items-start mt-3" role="alert">
+  <div class="d-flex align-items-center">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+      <use xlink:href="#info-fill" />
+    </svg>
+    <div [innerHTML]="lowStockAlertMessage"></div>
+  </div>
+  <button type="button" class="btn-close ms-3" aria-label="Close" (click)="lowStockAlertVisible = false"></button>
+</div>
+
+
+  <!-- Top Summary Cards -->
+  <div class="cards">
+    <!-- Total Inventory Card -->
+    <div class="card total-inventory">
+      <div class="card-title">Total Inventory</div>
+      <div class="card-value">{{ totalInventory }}</div>
+    </div>
+
+    <!-- Pending Orders Card -->
+    <div class="card pending-orders">
+      <div class="card-title">Pending Orders</div>
+      <div class="card-value">{{ pendingOrders }}</div>
+    </div>
+
+    <!-- Low Stock Alerts Card -->
+    <div class="card low-stock-alerts" (click)="showLowStockAlert()" style="cursor: pointer;">
+      <div class="card-title">Low Stock Alerts</div>
+      <div class="card-value">
+        {{ lowStockList.length > 0 ? lowStockList.length : 'No low stock items' }}
       </div>
-      
     </div>
   </div>
-  
+
+  <!-- Charts Section -->
+  <div class="charts">
+    <!-- Top Sold Products Chart -->
+    <div class="chart-card">
+      <h3>Top 3 Sold Products</h3>
+      <apx-chart 
+        [series]="topSoldSeries"
+        [chart]="topSoldChartOptions.chart"
+        [xaxis]="topSoldChartOptions.xaxis"
+        [colors]="topSoldChartOptions.colors"
+        [dataLabels]="topSoldChartOptions.dataLabels">
+      </apx-chart>
+    </div>
+
+    <!-- Least Sold Products Chart -->
+    <div class="chart-card">
+      <h3>Top 3 Least Sold Products</h3>
+      <apx-chart 
+        [series]="leastSoldSeries"
+        [chart]="leastSoldChartOptions.chart"
+        [xaxis]="leastSoldChartOptions.xaxis"
+        [colors]="leastSoldChartOptions.colors"
+        [dataLabels]="leastSoldChartOptions.dataLabels">
+      </apx-chart>
+    </div>
+
+    <!-- Future Prediction Chart -->
+    <div class="chart-card">
+      <h3>Predicted Future Sales (Next 15 Days)</h3>
+      <apx-chart 
+        [series]="futurePredictionSeries"
+        [chart]="futurePredictionChartOptions.chart"
+        [xaxis]="futurePredictionChartOptions.xaxis"
+        [colors]="futurePredictionChartOptions.colors"
+        [dataLabels]="futurePredictionChartOptions.dataLabels"
+        [stroke]="futurePredictionChartOptions.stroke"
+        [yaxis]="futurePredictionChartOptions.yaxis">
+      </apx-chart>
+    </div>
+
+    <!-- Product-wise 30-Day Prediction -->
+    <div class="chart-card">
+      <h3>Product-wise Future Sales (Next 30 Days)</h3>
+
+      <div class="form-row d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="form-group mb-0">
+          <label for="productSelect" class="fw-bold">Select Product:</label>
+          <select class="form-control" [(ngModel)]="selectedProductName" id="productSelect">
+            <option value="">Select a product</option>
+            <option *ngFor="let name of productNames" [value]="name">{{ name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <label class="invisible d-block">Generate</label>
+          <button class="btn btn-primary w-100" (click)="fetchPredictionByProduct(selectedProductName)">
+            Generate
+          </button>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <apx-chart
+        *ngIf="futureSalesByProductSeries.length"
+        [series]="futureSalesByProductSeries"
+        [chart]="futureSalesByProductChartOptions.chart"
+        [xaxis]="futureSalesByProductChartOptions.xaxis"
+        [colors]="futureSalesByProductChartOptions.colors"
+        [dataLabels]="futureSalesByProductChartOptions.dataLabels"
+        [stroke]="futureSalesByProductChartOptions.stroke"
+        [yaxis]="futureSalesByProductChartOptions.yaxis"
+        [title]="futureSalesByProductChartOptions.title">
+      </apx-chart>
+    </div>
+  </div>
+</div>

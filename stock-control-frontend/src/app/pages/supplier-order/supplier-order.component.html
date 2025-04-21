@@ -1,12 +1,24 @@
+<!-- ✅ Floating Success Alert - outside main container -->
+<div *ngIf="addedMessages.length" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1060; width: 80%;">
+  <div *ngFor="let msg of addedMessages; let i = index" class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="20" height="20" role="img" aria-label="Success:">
+      <use xlink:href="#check-circle-fill" />
+    </svg>
+    <div class="flex-grow-1">{{ msg }}</div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissMessage(i)"></button>
+  </div>
+</div>
+
+<!-- 🔽 Main container starts -->
 <div class="supplier-order-container">
   <h2>Supplier Orders</h2>
 
   <div class="form-group">
     <label for="supplier">Select Supplier:</label>
     <select class="form-control" [(ngModel)]="selectedSupplier" (change)="onSupplierSelect()">
-      <option value="">Choose a supplier</option>
-      <option *ngFor="let name of suppliers" [value]="name">{{ name }}</option>
-    </select>
+      <option value="" disabled selected hidden>Choose a supplier</option>
+      <option *ngFor="let name of suppliers" [ngValue]="name">{{ name }}</option>
+    </select>    
   </div>
 
   <div *ngIf="products.length > 0" class="product-table mt-4">
@@ -28,20 +40,17 @@
           <td>{{ product.zone }}</td>
           <td>{{ product.shelf }}</td>
           <td>{{ product.stock }}</td>
-          <td>
+          <td class="d-flex gap-2">
             <input
               type="number"
               [(ngModel)]="product.quantity_to_order"
-              (change)="onQuantityChange(product)"
-              [min]="1"
+              [min]="0"
               [max]="product.max_quantity_allowed"
               class="form-control"
+              style="width: 100px;"
             />
-            <div *ngIf="product.limitExceeded" class="text-danger small mt-1">
-              ❌ Cannot add more items as Shelf Capacity is 30 only!
-            </div>
+            <button class="btn btn-outline-primary btn-sm" (click)="placeOrder(product)" [disabled]="product.addDisabled">Add</button>
           </td>
-          
         </tr>
       </tbody>
     </table>
@@ -52,4 +61,21 @@
     <p><strong>Total Quantity:</strong> {{ orderSummary.totalQuantity }}</p>
     <button class="btn btn-primary" (click)="submitAllOrders()">Submit All Orders</button>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    <div id="limitToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="limitToastBody"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap icon symbol -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+    <symbol id="check-circle-fill" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+    </symbol>
+  </svg>
 </div>

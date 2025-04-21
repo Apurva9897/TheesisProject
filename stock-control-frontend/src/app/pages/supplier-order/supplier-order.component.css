@@ -36,3 +36,15 @@
 .text-danger {
   color: red;
 }
+
+.toast-container {
+  z-index: 1055;
+}
+
+.toast {
+  min-width: 250px;
+}
+
+.alert-dismissible .btn-close {
+  padding: 1rem;
+}

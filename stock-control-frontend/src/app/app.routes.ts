@@ -10,12 +10,13 @@ import { TrackOrdersComponent } from './pages/track-orders/track-orders.componen
 import { AdminWarehouseZonesComponent } from './pages/admin-warehouse-zones/admin-warehouse-zones.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { SupplierOrderComponent } from './pages/supplier-order/supplier-order.component';
-
+import { ReportsComponent } from './pages/reports/reports.component'; 
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+    
      // Admin Dashboard with child routes
   // ADMIN ROUTES PROPERLY
   {
@@ -24,7 +25,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: DashboardHomeComponent },  // Default (dashboard cards and graphs)
       { path: 'warehouse-zones', component: AdminWarehouseZonesComponent },
-      { path: 'suppliers', component: SupplierOrderComponent }
+      { path: 'suppliers', component: SupplierOrderComponent },
+      {path: 'reports', component: ReportsComponent}, // Placeholder for reports
     ]
   },
 

@@ -8,6 +8,8 @@ import numpy as np
 from flask import request
 from models import SupplierOrder, SupplierOrderDetails
 from models import Supplier
+from datetime import datetime, timedelta
+from pytz import timezone  
 
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
@@ -282,10 +284,15 @@ def get_all_product_names():
 @admin_bp.route('/get_supplier_order_reports', methods=['GET'])
 def get_supplier_order_reports():
     try:
+        # ✅ Fix: First retrieve raw query strings
         supplier_name = request.args.get('supplier_name')  # Optional
-        start_date = request.args.get('start_date')         # Optional: "2025-04-01"
-        end_date = request.args.get('end_date')             # Optional: "2025-04-20"
+        start_date_str = request.args.get('start_date')     # Optional
+        end_date_str = request.args.get('end_date')         # Optional
 
+        # ✅ Convert to datetime if provided
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d") if start_date_str else None
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d") if end_date_str else None
+        
         query = db.session.query(SupplierOrder, Supplier).join(Supplier, SupplierOrder.supplier_id == Supplier.id)
 
         if supplier_name and supplier_name != "All":
@@ -294,7 +301,7 @@ def get_supplier_order_reports():
         if start_date:
             query = query.filter(SupplierOrder.order_date >= start_date)
         if end_date:
-            query = query.filter(SupplierOrder.order_date <= end_date)
+            query = query.filter(SupplierOrder.order_date < end_date + timedelta(days=1))  # Include end day
 
         orders = query.order_by(SupplierOrder.order_date.desc()).all()
 
@@ -303,7 +310,7 @@ def get_supplier_order_reports():
             result.append({
                 "order_id": f"SO-{supplier_order.id}",
                 "supplier": supplier.name,
-                "order_date": supplier_order.order_date.strftime("%b %d, %Y"),
+                "order_date": supplier_order.order_date.strftime("%b %d, %Y %H:%M:%S"),
                 "total_cost": float(supplier_order.total_amount),
                 "status": supplier_order.status,
                 "products_count": len(supplier_order.order_details)
@@ -314,13 +321,17 @@ def get_supplier_order_reports():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-
 @admin_bp.route('/submit_supplier_orders', methods=['POST'])
 def submit_supplier_orders():
     try:
         data = request.get_json()
         supplier_name = data.get('supplier_name')
         items = data.get('items', [])
+
+        from pytz import timezone  # ✅ Add this if not already at top
+        uk_timezone = timezone('Europe/London')
+        order_date = datetime.now(uk_timezone) 
+
 
         if not supplier_name or not items:
             return jsonify({"success": False, "message": "Missing supplier name or items"}), 400
@@ -340,6 +351,7 @@ def submit_supplier_orders():
         supplier_order = SupplierOrder(
             supplier_id=supplier.id,
             admin_id=admin_id,
+            order_date=order_date, 
             total_amount=total_amount,
             status='Pending'
         )

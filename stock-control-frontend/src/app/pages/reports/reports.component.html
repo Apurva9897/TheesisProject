@@ -1,0 +1,69 @@
+<div class="reports-container">
+    <h2>Reports</h2>
+  
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mt-3">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'supplier'" (click)="activeTab = 'supplier'">Supplier Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'client'" (click)="activeTab = 'client'">Client Orders</a>
+      </li>
+    </ul>
+  
+    <!-- Supplier Orders Content -->
+    <div *ngIf="activeTab === 'supplier'" class="supplier-orders mt-4">
+      <div class="filters d-flex flex-wrap gap-3 align-items-end">
+        <div>
+          <label>Supplier</label>
+          <select class="form-control" [(ngModel)]="filters.supplier">
+            <option value="All">All Suppliers</option>
+            <option *ngFor="let s of suppliers" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div>
+          <label>Start Date</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.startDate">
+        </div>
+        <div>
+          <label>End Date</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.endDate">
+        </div>
+        <button class="btn btn-primary" (click)="fetchReports()">Generate Report</button>
+        <button class="btn btn-outline-success ms-auto" (click)="exportCSV()">Export Report</button>
+      </div>
+  
+      <table class="table table-bordered mt-4" *ngIf="supplierOrders.length > 0">
+        <thead>
+          <tr>
+            <th>PO Number</th>
+            <th>Supplier</th>
+            <th>Date</th>
+            <th>Products Count</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of supplierOrders">
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.supplier }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.products_count }}</td>
+            <td>£{{ order.total_cost.toFixed(2) }}</td>
+            <td><span class="badge bg-info text-dark">{{ order.status }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div *ngIf="supplierOrders.length === 0 && hasFetched" class="alert alert-warning mt-4">
+        No records found for selected filters.
+      </div>
+    </div>
+  
+    <!-- Placeholder for Client Orders -->
+    <div *ngIf="activeTab === 'client'" class="mt-4">
+      <p>Client order report coming soon...</p>
+    </div>
+  </div>
+  

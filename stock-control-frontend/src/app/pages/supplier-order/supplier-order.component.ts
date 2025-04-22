@@ -20,6 +20,7 @@ export class SupplierOrderComponent {
   toastRef: any = null;
   addedMessages: string[] = [];
   addedMap = new Map<string, number>();
+  selectedOrderDate: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -108,16 +109,16 @@ export class SupplierOrderComponent {
       alert('❌ No products added');
       return;
     }
-  
+    
     const payload = {
-      supplier_name: this.selectedSupplier,
-      items: validOrders.map(p => ({
-        product_id: p.id,
-        product_name: p.name,
-        zone: p.zone,
-        shelf: p.shelf,
-        quantity: p.added_quantity,
-        unit_price: p.price
+    supplier_name: this.selectedSupplier,
+    items: validOrders.map(p => ({
+    product_id: p.id,
+    product_name: p.name,
+    zone: p.zone,
+    shelf: p.shelf,
+    quantity: p.added_quantity,
+    unit_price: p.price
       }))
     };
   

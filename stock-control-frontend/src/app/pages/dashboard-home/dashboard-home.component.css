@@ -87,3 +87,23 @@
     min-width: 200px;
   }
  
+  .chart-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .chart-row .chart-card {
+    flex: 1 1 calc(50% - 10px);
+  }
+  
+  @media (max-width: 768px) {
+    .chart-row {
+      flex-direction: column;
+    }
+  
+    .chart-row .chart-card {
+      flex: 1 1 100%;
+    }
+  }
+  

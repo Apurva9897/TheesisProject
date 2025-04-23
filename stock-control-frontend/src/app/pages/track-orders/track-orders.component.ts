@@ -27,11 +27,14 @@ export class TrackOrdersComponent implements OnInit {
             this.orders = response.orders.map((order: any, index: number) => ({
               ...order,
               order_id: `#ORD${100 + index}`,
-              placed_on: new Date(order.order_date || Date.now()).toLocaleDateString('en-US', {
+              placed_on: new Date(order.order_date).toLocaleString('en-GB', {
                 year: 'numeric',
                 month: 'short',
-                day: '2-digit'
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
               }),
+              
               items: 1,
               total: '$123.45'
             }));

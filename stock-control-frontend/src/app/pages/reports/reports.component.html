@@ -63,7 +63,48 @@
   
     <!-- Placeholder for Client Orders -->
     <div *ngIf="activeTab === 'client'" class="mt-4">
-      <p>Client order report coming soon...</p>
+      <div class="client-orders mt-4">
+        <div class="filters d-flex flex-wrap gap-3 align-items-end">
+          <div>
+            <label>Start Date</label>
+            <input type="date" class="form-control" [(ngModel)]="clientFilters.startDate">
+          </div>
+          <div>
+            <label>End Date</label>
+            <input type="date" class="form-control" [(ngModel)]="clientFilters.endDate">
+          </div>
+          <button class="btn btn-primary" (click)="fetchClientReports()">Generate Report</button>
+          <button class="btn btn-outline-success ms-auto" (click)="exportClientCSV()">Export Report</button>
+        </div>
+      
+        <table class="table table-bordered mt-4" *ngIf="clientOrders.length > 0">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer Email</th>
+              <th>Order Date</th>
+              <th>Products Count</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of clientOrders">
+              <td>{{ order.order_id }}</td>
+              <td>{{ order.customer_email }}</td>
+              <td>{{ order.order_date }}</td>
+              <td>{{ order.products_count }}</td>
+              <td>£{{ order.total_cost.toFixed(2) }}</td>
+              <td><span class="badge bg-warning text-dark">{{ order.status }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <div *ngIf="clientOrders.length === 0 && clientFilters.startDate && clientFilters.endDate" class="alert alert-warning mt-4">
+          No client records found for selected dates.
+        </div>
+      </div>
+     
     </div>
   </div>
   

@@ -222,7 +222,8 @@ def track_orders():
                     "order_id": order.id,
                     "product_name": product.name,
                     "quantity": item.quantity,
-                    "status": status
+                    "status": status,
+                    "order_date": order.order_date.strftime("%Y-%m-%d %H:%M:%S")
                 })
 
     return jsonify({"success": True, "orders": order_details}), 200

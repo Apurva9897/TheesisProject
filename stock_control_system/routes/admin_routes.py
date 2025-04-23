@@ -10,6 +10,7 @@ from models import SupplierOrder, SupplierOrderDetails
 from models import Supplier
 from datetime import datetime, timedelta
 from pytz import timezone  
+from sqlalchemy import and_
 
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
@@ -376,5 +377,48 @@ def submit_supplier_orders():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/get_client_order_reports', methods=['GET'])
+def get_client_order_reports():
+    try:
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+
+        # ✅ Validate date format
+        if not start_date_str or not end_date_str:
+            return jsonify({"success": False, "message": "Start and End dates are required"}), 400
+
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+
+        # ✅ Get orders within the date range (inclusive)
+        orders = Order.query.filter(
+            and_(
+                Order.order_date >= start_date,
+                Order.order_date <= end_date
+            )
+        ).order_by(Order.order_date.desc()).all()
+
+        # ✅ Build the report data
+        report_data = []
+        for order in orders:
+            order_items = OrderDetails.query.filter_by(order_id=order.id).all()
+            product_count = len(order_items)
+            formatted_date = order.order_date.strftime('%b %d, %Y %H:%M:%S') if order.order_date else "N/A"
+
+            report_data.append({
+                "order_id": f"SO-{order.id}",
+                "customer_email": order.customer_email,
+                "order_date": order.order_date.strftime('%b %d, %Y %H:%M:%S'),
+                "products_count": product_count,
+                "total_cost": float(order.total_amount),
+                "status": order.status
+            })
+
+        return jsonify({"success": True, "orders": report_data}), 200
+
+    except Exception as e:
+        print("❌ Error in get_client_order_reports:", str(e))
+        return jsonify({"success": False, "message": "Server error"}), 500
 
 

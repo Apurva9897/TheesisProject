@@ -106,4 +106,8 @@
       flex: 1 1 100%;
     }
   }
+
+  apx-chart {
+    transition: all 0.5s ease-in-out;
+  }
   

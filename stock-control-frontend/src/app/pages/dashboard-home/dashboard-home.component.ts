@@ -57,6 +57,7 @@ export class DashboardHomeComponent implements OnInit {
             this.totalInventory = response.total_inventory;
             this.pendingOrders = response.pending_orders;
             this.lowStockList = response.low_stock || [];
+            console.log('Low Stock Response:', response.low_stock);
 
 
             // ✅ For Top Sold
@@ -65,38 +66,46 @@ export class DashboardHomeComponent implements OnInit {
   data: response.top_sold.map((p: any) => p.sold_quantity)
 }];
 this.topSoldChartOptions = {
-  chart: { type: 'bar', height: 350 },
-  colors: ['#FFB6C1', '#FF69B4', '#C71585'],
-  xaxis: {
-    categories: response.top_sold.map((p: any) => p.name),  // ✅ correct names
-    labels: {
-      rotate: -60,
-      trim: true,
-      hideOverlappingLabels: false,
-      showDuplicates: true,
-      style: { fontSize: '12px' }
+  chart: { 
+    type: 'bar', 
+    height: 350,
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800,
+      animateGradually: { enabled: true, delay: 150 },
+      dynamicAnimation: { enabled: true, speed: 350 }
     }
+  },
+  colors: ['#FFB6C1'],
+  xaxis: {
+    categories: response.top_sold.map((p: any) => p.name),
+    labels: { rotate: -60, style: { fontSize: '12px' } }
   },
   dataLabels: { enabled: true }
 };
 
-// ✅ For Least Sold
 this.leastSoldSeries = [{
   name: 'Least Sold',
   data: response.least_sold.map((p: any) => p.sold_quantity)
 }];
+// ✅ For Least Sold
 this.leastSoldChartOptions = {
-  chart: { type: 'bar', height: 350 },
-  colors: ['#D8BFD8', '#DDA0DD', '#BA55D3'],
-  xaxis: {
-    categories: response.least_sold.map((p: any) => p.name),  // ✅ correct names
-    labels: {
-      rotate: -60,
-      trim: true,
-      hideOverlappingLabels: false,
-      showDuplicates: true,
-      style: { fontSize: '12px' }
+  chart: {
+    type: 'bar',
+    height: 350,
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800,
+      animateGradually: { enabled: true, delay: 150 },
+      dynamicAnimation: { enabled: true, speed: 350 }
     }
+  },
+  colors: ['#DDA0DD'],
+  xaxis: {
+    categories: response.least_sold.map((p: any) => p.name),
+    labels: { rotate: -60, style: { fontSize: '12px' } }
   },
   dataLabels: { enabled: true }
 };
@@ -132,36 +141,31 @@ this.leastSoldChartOptions = {
               ];
     
               this.futurePredictionChartOptions = {
-                chart: { 
-                  type: 'scatter',    // 🔥 Change type to 'scatter'
+                chart: {
+                  type: 'line',
                   height: 300,
-                  toolbar: { show: false },
-                  zoom: { enabled: true }
+                  animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 900,
+                    animateGradually: { enabled: true, delay: 100 },
+                    dynamicAnimation: { enabled: true, speed: 350 }
+                  },
+                  toolbar: { show: true }
                 },
+                stroke: { curve: 'smooth' },
                 colors: ['#2196F3'],
                 xaxis: { 
                   type: 'category',
                   title: { text: 'Products' }
                 },
-                yaxis: {
-                  title: { text: 'Predicted Sales' }
-                },
+                yaxis: { title: { text: 'Predicted Sales' } },
                 dataLabels: { enabled: true },
-                stroke: {
-                  curve: 'smooth',   // 🔥 Smooth curve between points
-                  width: 2
-                },
-                markers: {
-                  size: 6,           // 🔵 Make dots bigger
-                  hover: { size: 8 }
-                },
+                markers: { size: 6, hover: { size: 8 } },
                 title: {
-                  text: 'Predicted Sales (Linear Regression Model for Next 15 Days)', // 🔥 Title added
+                  text: 'Predicted Sales (Linear Regression Model)',
                   align: 'center',
-                  style: {
-                    fontSize: '18px',
-                    fontWeight: 'bold'
-                  }
+                  style: { fontSize: '18px', fontWeight: 'bold' }
                 }
               };
             }
@@ -258,7 +262,7 @@ showLowStockAlert(): void {
     this.lowStockAlertMessage = "✅ All products are sufficiently stocked!";
   } else {
     this.lowStockAlertMessage = this.lowStockList.map(item => 
-      `• ${item.name}: ${item.stock} left`).join('<br>');
+      `• ${item.name}: ${item.remaining} left`).join('<br>');
   }
 
   this.lowStockAlertVisible = true;

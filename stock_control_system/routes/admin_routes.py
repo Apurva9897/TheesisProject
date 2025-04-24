@@ -11,6 +11,7 @@ from models import Supplier
 from datetime import datetime, timedelta
 from pytz import timezone  
 from sqlalchemy import and_
+from models import Shelf
 
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
@@ -421,4 +422,63 @@ def get_client_order_reports():
         print("❌ Error in get_client_order_reports:", str(e))
         return jsonify({"success": False, "message": "Server error"}), 500
 
+@admin_bp.route('/get_shelves_by_zone/<zone_name>', methods=['GET'])
+def get_shelves_by_zone(zone_name):
+    try:
+        shelves = Shelf.query.filter_by(zone=zone_name).all()
 
+        result = []
+        for shelf in shelves:
+            product = shelf.product  # via relationship
+            stock = product.stock if product else 0
+            capacity = shelf.capacity
+            available = capacity - stock
+            usage_percent = f"{int((stock / capacity) * 100)}%" if capacity > 0 else "0%"
+
+            result.append({
+                "shelf": shelf.name,
+                "product": product.name if product else "Empty",
+                "occupied": stock, 
+                "available": available,
+                "capacity": capacity,
+                "status": usage_percent
+            })
+
+        return jsonify({"success": True, "shelves": result}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route('/trigger_update_order_status', methods=['POST'])
+def trigger_update_order_status():
+    try:
+        orders = Order.query.all()
+        updated_count = 0
+
+        today = datetime.utcnow().date()
+
+        for order in orders:
+            order_date = order.order_date.date()
+            days_diff = (today - order_date).days
+
+            if days_diff == 0:
+                new_status = 'Pending'
+            elif days_diff == 1:
+                new_status = 'Packaging'
+            else:
+                new_status = 'Delivered'
+
+            if order.status != new_status:
+                order.status = new_status
+                updated_count += 1
+
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": f"Order statuses updated for {updated_count} orders."
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500

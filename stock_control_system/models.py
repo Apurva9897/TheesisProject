@@ -174,3 +174,18 @@ class SupplierOrderDetails(db.Model):
 
     supplier_order = db.relationship('SupplierOrder', back_populates='order_details')
     product = db.relationship('Product')
+
+# -------------------- Shleves Model --------------------
+
+class Shelf(db.Model):
+    __tablename__ = 'shelves'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)              # e.g., "Shelf 1"
+    zone = db.Column(db.String(255), nullable=False)             # e.g., "Zone A"
+    capacity = db.Column(db.Integer, default=30, nullable=False) # Max capacity per shelf
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))  # Assigned product
+
+    # Relationship to Product
+    product = db.relationship("Product", backref="shelf")        # Access shelf from product
+

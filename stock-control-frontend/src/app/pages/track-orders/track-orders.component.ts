@@ -24,8 +24,8 @@ export class TrackOrdersComponent implements OnInit {
       this.http.get<any>(`http://127.0.0.1:5000/customer_dashboard/track_orders?email=${customerEmail}`)
         .subscribe(response => {
           if (response.success) {
-            this.orders = response.orders.map((order: any, index: number) => ({
-              order_id: `#ORD${100 + index}`,
+            this.orders = response.orders.map((order: any) => ({
+              order_id: order.order_id,  // ✅ Use actual ID from backend
               placed_on: new Date(order.placed_on).toLocaleString('en-GB', {
                 year: 'numeric',
                 month: 'short',

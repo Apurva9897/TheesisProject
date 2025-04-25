@@ -135,13 +135,16 @@ def track_orders():
                     "quantity": item.quantity
                 })
 
-        result.append({
-            "order_id": order.id,
-            "placed_on": order.order_date.strftime("%Y-%m-%d %H:%M:%S"),
-            "status": calculate_status(order.order_date),
-            "total": float(order.total_amount),
-            "items": product_list
-        })
+    order_id = order.custom_order_id if order.custom_order_id else f"ORD{order.id}"
+
+    # ✅ 2. Use it inside your result dictionary
+    result.append({
+        "order_id": order_id,
+        "placed_on": order.order_date.strftime("%Y-%m-%d %H:%M:%S"),
+        "status": calculate_status(order.order_date),
+        "total": float(order.total_amount),
+        "items": product_list
+    })
 
     return jsonify({"success": True, "orders": result}), 200
 
@@ -166,6 +169,7 @@ def confirm_order():
         )
         db.session.add(new_order)
         db.session.flush()  # Get Order ID before committing
+        new_order.custom_order_id = f"ORD{new_order.id}"
         total_price = 0
         updated_items = []
         for item in items:
@@ -208,6 +212,7 @@ def confirm_order():
         return jsonify({
             "success": True,
             "total_price": float(new_order.total_amount),
+            "order_id": new_order.formatted_id,
             "items": updated_items
         }), 200
     except Exception as e:

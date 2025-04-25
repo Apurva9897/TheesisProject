@@ -39,7 +39,7 @@ export class ConfirmOrderComponent implements OnInit {
     }).subscribe(response => {
       if (response.success) {
         this.totalPrice = response.total_price;
-        this.orderId = `ORD${100 + Math.floor(Math.random() * 1000)}`;  // TEMP ID
+        this.orderId = response.order_id;  // TEMP ID
 
         this.selectedItems = response.items.map((item: any) => ({
           ...item,

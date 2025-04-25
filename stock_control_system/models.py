@@ -56,14 +56,20 @@ class Order(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
-    customer_email = db.Column(db.String(100), nullable=False)  
+    customer_email = db.Column(db.String(100), nullable=False)
     order_date = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default="Pending")
     total_amount = db.Column(db.DECIMAL(10, 2), nullable=False, default=0)
-
+    custom_order_id = db.Column(db.String(20), unique=True)
     # Relationships
     customer = db.relationship('Customer', back_populates='orders')
     order_details = db.relationship('OrderDetails', back_populates='order', lazy=True, cascade="all, delete-orphan")
+
+    # ✅ Add this inside the class, properly indented
+    @property
+    def formatted_id(self):
+        return f"#ORD{self.id}"
+
 
 # -------------------- Order Details Model --------------------
 class OrderDetails(db.Model):

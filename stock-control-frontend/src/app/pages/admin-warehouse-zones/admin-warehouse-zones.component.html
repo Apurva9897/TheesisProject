@@ -77,17 +77,17 @@
       <tr>
         <th>Shelf</th>
         <th>Current Product</th>
-       <!----<th>Occupied</th>-->
+        <th>Occupied</th>           <!-- ✅ Un-commented and restored -->
         <th>Available</th>
         <th>Capacity</th>
-        <th>Status</th>
+        <th>% Shelf Occupied</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let shelf of shelves">
         <td>{{ shelf.shelf }}</td>
         <td>{{ shelf.product }}</td>
-        <td>{{ shelf.stock ?? 0}}</td>
+        <td>{{ shelf.occupied }}</td> 
         <td>{{ shelf.available }}</td>
         <td>{{ shelf.capacity }}</td>
         <td>

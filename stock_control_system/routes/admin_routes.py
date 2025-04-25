@@ -407,10 +407,13 @@ def get_client_order_reports():
             product_count = len(order_items)
             formatted_date = order.order_date.strftime('%b %d, %Y %H:%M:%S') if order.order_date else "N/A"
 
+            # ✅ Use custom_order_id if present, else fallback to ORD{id}
+            order_id = order.custom_order_id if order.custom_order_id else f"ORD{order.id}"
+
             report_data.append({
-                "order_id": f"SO-{order.id}",
+                "order_id": order_id,
                 "customer_email": order.customer_email,
-                "order_date": order.order_date.strftime('%b %d, %Y %H:%M:%S'),
+                "order_date": formatted_date,
                 "products_count": product_count,
                 "total_cost": float(order.total_amount),
                 "status": order.status
@@ -482,3 +485,84 @@ def trigger_update_order_status():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@admin_bp.route('/search_client_order/<order_id>', methods=['GET'])
+def search_client_order(order_id):
+    try:
+        # Extract numeric part from "ORD36"
+        if not order_id.startswith("ORD"):
+            return jsonify({"success": False, "message": "Invalid order ID format"}), 400
+        
+        numeric_id = int(order_id.replace("ORD", ""))
+        order = Order.query.get(numeric_id)
+
+        if not order:
+            return jsonify({"success": False, "message": "Client order not found"}), 404
+
+        order_items = OrderDetails.query.filter_by(order_id=order.id).all()
+        products = []
+        for item in order_items:
+            product = Product.query.get(item.product_id)
+            if product:
+                products.append({
+                    "name": product.name,
+                    "quantity": item.quantity,
+                    "unit_price": float(item.unit_price),
+                    "subtotal": float(item.subtotal)
+                })
+
+        return jsonify({
+            "success": True,
+            "order_id": f"ORD{order.id}",
+            "status": order.status,
+            "total_cost": float(order.total_amount),
+            "customer_email": order.customer_email,
+            "order_date": order.order_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "products": products
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@admin_bp.route('/search_supplier_order/<order_id>', methods=['GET'])
+def search_supplier_order(order_id):
+    try:
+        # 🧠 Extract numeric part from 'SO-101'
+        if not order_id.startswith("SO-"):
+            return jsonify({"success": False, "message": "Invalid supplier order ID format"}), 400
+
+        numeric_id = int(order_id.replace("SO-", ""))
+        order = SupplierOrder.query.get(numeric_id)
+
+        if not order:
+            return jsonify({"success": False, "message": "Supplier order not found"}), 404
+
+        # Get supplier name
+        supplier = Supplier.query.get(order.supplier_id)
+        supplier_name = supplier.name if supplier else "Unknown Supplier"
+
+        # Get product details
+        details = SupplierOrderDetails.query.filter_by(supplier_order_id=order.id).all()
+        items = []
+        for detail in details:
+            product = Product.query.get(detail.product_id)
+            if product:
+                items.append({
+                    "product_name": product.name,
+                    "quantity": detail.quantity,
+                    "unit_price": float(detail.unit_price),
+                    "subtotal": float(detail.subtotal)
+                })
+
+        return jsonify({
+            "success": True,
+            "supplier": supplier_name,
+            "order_date": order.order_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "total_amount": float(order.total_amount),
+            "items": items
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "message": "Server error", "error": str(e)}), 500

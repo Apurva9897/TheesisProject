@@ -1,6 +1,6 @@
 <div class="confirm-order-container">
   <h2>Order Confirmation</h2>
-
+  <p *ngIf="orderId" class="text-muted">Order ID: {{ orderId }}</p>
   <div *ngFor="let item of selectedItems" class="card mb-3 shadow-sm">
     <div class="row g-0">
       <div class="col-md-4 text-center">

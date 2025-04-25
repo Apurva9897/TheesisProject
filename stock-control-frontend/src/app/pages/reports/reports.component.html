@@ -1,8 +1,10 @@
 <div class="reports-container">
-    <h2>Reports</h2>
-  
+  <h2 class="mb-4">Reports</h2>
+
+  <!-- Header row with tabs and buttons -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <!-- Tabs -->
-    <ul class="nav nav-tabs mt-3">
+    <ul class="nav nav-tabs mb-0 flex-grow-1">
       <li class="nav-item">
         <a class="nav-link" [class.active]="activeTab === 'supplier'" (click)="activeTab = 'supplier'">Supplier Orders</a>
       </li>
@@ -10,31 +12,63 @@
         <a class="nav-link" [class.active]="activeTab === 'client'" (click)="activeTab = 'client'">Client Orders</a>
       </li>
     </ul>
-  
-    <!-- Supplier Orders Content -->
-    <div *ngIf="activeTab === 'supplier'" class="supplier-orders mt-4">
-      <div class="filters d-flex flex-wrap gap-3 align-items-end">
-        <div>
-          <label>Supplier</label>
-          <select class="form-control" [(ngModel)]="filters.supplier">
-            <option value="All">All Suppliers</option>
-            <option *ngFor="let s of suppliers" [value]="s">{{ s }}</option>
-          </select>
-        </div>
-        <div>
-          <label>Start Date</label>
-          <input type="date" class="form-control" [(ngModel)]="filters.startDate">
-        </div>
-        <div>
-          <label>End Date</label>
-          <input type="date" class="form-control" [(ngModel)]="filters.endDate">
-        </div>
-        <button class="btn btn-primary" (click)="fetchReports()">Generate Report</button>
-        <button class="btn btn-outline-success ms-auto" (click)="exportCSV()">Export Report</button>
+    
+    <!-- Action buttons -->
+    <div class="d-flex gap-2 ms-3">
+      <button *ngIf="activeTab === 'supplier'" class="btn btn-primary" (click)="fetchReports()">Generate Report</button>
+      <button *ngIf="activeTab === 'supplier'" class="btn btn-outline-success" (click)="exportCSV()">Export Report</button>
+      <button *ngIf="activeTab === 'client'" class="btn btn-primary" (click)="fetchClientReports()">Generate Report</button>
+      <button *ngIf="activeTab === 'client'" class="btn btn-outline-success" (click)="exportClientCSV()">Export Report</button>
+    </div>
+  </div>
+
+  <!-- SUPPLIER ORDERS -->
+  <div *ngIf="activeTab === 'supplier'" class="supplier-tab">
+    <div class="row g-3 mb-4 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Supplier</label>
+        <select class="form-select" [(ngModel)]="filters.supplier">
+          <option value="All">All Suppliers</option>
+          <option *ngFor="let s of suppliers" [value]="s">{{ s }}</option>
+        </select>
       </div>
-  
-      <table class="table table-bordered mt-4" *ngIf="supplierOrders.length > 0">
-        <thead>
+      <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.startDate">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.endDate">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Search by Order ID</label>
+        <div class="input-group">
+          <input [(ngModel)]="supplierOrderSearchId" placeholder="e.g. SO-101" class="form-control">
+          <button (click)="searchSupplierOrder()" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Result Card -->
+    <div *ngIf="searchedSupplierOrder" class="card mb-4 shadow-sm">
+      <div class="card-body position-relative">
+        <button type="button" class="btn-close" (click)="searchedSupplierOrder = null"></button>
+        <h5 class="card-title">Supplier Order: {{ searchedSupplierOrder.order_id }}</h5>
+        <p class="mb-2"><strong>Supplier:</strong> {{ searchedSupplierOrder.supplier }}</p>
+        <p class="mb-2"><strong>Date:</strong> {{ searchedSupplierOrder.order_date }}</p>
+        <p class="mb-2"><strong>Total:</strong> ${{ searchedSupplierOrder.total_amount.toFixed(2) }}</p>
+        <ul class="list-unstyled">
+          <li class="mb-1" *ngFor="let item of searchedSupplierOrder.items">
+            {{ item.product_name }} – Qty: {{ item.quantity }}, Unit Price: ${{ item.unit_price.toFixed(2) }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Report Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" *ngIf="supplierOrders.length > 0">
+        <thead class="table-light">
           <tr>
             <th>PO Number</th>
             <th>Supplier</th>
@@ -50,61 +84,82 @@
             <td>{{ order.supplier }}</td>
             <td>{{ order.order_date }}</td>
             <td>{{ order.products_count }}</td>
-            <td>£{{ order.total_cost.toFixed(2) }}</td>
+            <td>${{ order.total_cost.toFixed(2) }}</td>
             <td><span class="badge bg-info text-dark">{{ order.status }}</span></td>
           </tr>
         </tbody>
       </table>
-  
-      <div *ngIf="supplierOrders.length === 0 && hasFetched" class="alert alert-warning mt-4">
-        No records found for selected filters.
-      </div>
     </div>
-  
-    <!-- Placeholder for Client Orders -->
-    <div *ngIf="activeTab === 'client'" class="mt-4">
-      <div class="client-orders mt-4">
-        <div class="filters d-flex flex-wrap gap-3 align-items-end">
-          <div>
-            <label>Start Date</label>
-            <input type="date" class="form-control" [(ngModel)]="clientFilters.startDate">
-          </div>
-          <div>
-            <label>End Date</label>
-            <input type="date" class="form-control" [(ngModel)]="clientFilters.endDate">
-          </div>
-          <button class="btn btn-primary" (click)="fetchClientReports()">Generate Report</button>
-          <button class="btn btn-outline-success ms-auto" (click)="exportClientCSV()">Export Report</button>
-        </div>
-      
-        <table class="table table-bordered mt-4" *ngIf="clientOrders.length > 0">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer Email</th>
-              <th>Order Date</th>
-              <th>Products Count</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of clientOrders">
-              <td>{{ order.order_id }}</td>
-              <td>{{ order.customer_email }}</td>
-              <td>{{ order.order_date }}</td>
-              <td>{{ order.products_count }}</td>
-              <td>£{{ order.total_cost.toFixed(2) }}</td>
-              <td><span class="badge bg-warning text-dark">{{ order.status }}</span></td>
-            </tr>
-          </tbody>
-        </table>
-      
-        <div *ngIf="clientOrders.length === 0 && clientFilters.startDate && clientFilters.endDate" class="alert alert-warning mt-4">
-          No client records found for selected dates.
-        </div>
-      </div>
-     
+
+    <div *ngIf="supplierOrders.length === 0 && hasFetched" class="alert alert-warning mt-3">
+      No records found for selected filters.
     </div>
   </div>
-  
+
+  <!-- CLIENT ORDERS -->
+  <div *ngIf="activeTab === 'client'" class="client-tab">
+    <div class="row g-3 mb-4 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="clientFilters.startDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="clientFilters.endDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Search by Order ID</label>
+        <div class="input-group">
+          <input [(ngModel)]="clientOrderSearchId" placeholder="e.g. ORD101" class="form-control">
+          <button (click)="searchClientOrder()" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Result Card -->
+    <div *ngIf="searchedClientOrder" class="card mb-4 shadow-sm">
+      <div class="card-body position-relative">
+        <button type="button" class="btn-close" (click)="searchedClientOrder = null"></button>
+        <h5 class="card-title">Order ID: {{ searchedClientOrder.order_id }}</h5>
+        <p class="mb-2"><strong>Status:</strong> {{ searchedClientOrder.status }}</p>
+        <p class="mb-2"><strong>Order Date:</strong> {{ searchedClientOrder.order_date }}</p>
+        <p class="mb-2"><strong>Total:</strong> ${{ searchedClientOrder.total_cost.toFixed(2) }}</p>
+        <ul class="list-unstyled">
+          <li class="mb-1" *ngFor="let item of searchedClientOrder.products">
+            {{ item.name }} – Qty: {{ item.quantity }}, Unit Price: ${{ item.unit_price.toFixed(2) }}, Subtotal: ${{ item.subtotal.toFixed(2) }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Report Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" *ngIf="clientOrders.length > 0">
+        <thead class="table-light">
+          <tr>
+            <th>Order ID</th>
+            <th>Customer Email</th>
+            <th>Order Date</th>
+            <th>Products Count</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of clientOrders">
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.customer_email }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.products_count }}</td>
+            <td>${{ order.total_cost.toFixed(2) }}</td>
+            <td><span class="badge bg-warning text-dark">{{ order.status }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="clientOrders.length === 0 && clientFilters.startDate && clientFilters.endDate" class="alert alert-warning mt-3">
+      No client records found for selected dates.
+    </div>
+  </div>
+</div>

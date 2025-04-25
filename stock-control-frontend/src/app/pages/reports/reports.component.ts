@@ -22,7 +22,11 @@ export class ReportsComponent implements OnInit {
   };
 
   hasFetched = false;
+  clientOrderSearchId: string = '';
+  searchedClientOrder: any = null;
 
+supplierOrderSearchId: string = '';
+searchedSupplierOrder: any = null;
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {}
@@ -135,4 +139,62 @@ export class ReportsComponent implements OnInit {
     document.body.removeChild(link);
   }
 
+  searchClientOrder() {
+    if (!this.clientOrderSearchId) return;
+  
+    const orderId = this.clientOrderSearchId.trim();
+    this.http.get<any>(`http://127.0.0.1:5000/admin/search_client_order/${orderId}`).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.searchedClientOrder = {
+            order_id: res.order_id,
+            placed_on: res.order_date,
+            status: res.status,
+            total: res.total_cost,
+            items: res.products.map((item: any) => ({
+              name: item.name,
+              quantity: item.quantity,
+              unit_price: item.unit_price,
+              subtotal: item.subtotal
+            }))
+          };
+        } else {
+          this.searchedClientOrder = null;
+          alert("Client order not found.");
+        }
+      },
+      error: () => {
+        alert("Error searching client order.");
+      }
+    });
+  }
+  
+  closeClientOrderCard() {
+    this.searchedClientOrder = null;
+  }
+  
+  
+  searchSupplierOrder() {
+    if (!this.supplierOrderSearchId) return;
+  
+    this.http.get<any>(`http://127.0.0.1:5000/admin/search_supplier_order/${this.supplierOrderSearchId}`)
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.searchedSupplierOrder = {
+              order_id: this.supplierOrderSearchId,
+              supplier: res.supplier,
+              order_date: res.order_date,
+              total_amount: res.total_amount,
+              items: res.items
+            };
+          }
+        },
+        error: () => {
+          this.searchedSupplierOrder = null;
+          alert("Supplier Order not found");
+        }
+      });
+  }
+  
 }

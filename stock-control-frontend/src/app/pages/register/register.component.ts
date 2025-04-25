@@ -42,10 +42,8 @@ export class RegisterComponent {
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
       role: ['', Validators.required],
-      countryCode: ['+44', Validators.required],   // ✅ Add country code
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      address: ['', Validators.required]
     });
     
   }

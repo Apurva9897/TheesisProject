@@ -2,18 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import {
-  ApexChart,
-  ApexXAxis,
-  ApexDataLabels,
-  ApexTitleSubtitle,
-  ApexYAxis,
-  ApexNonAxisChartSeries,
-  ApexAxisChartSeries
-} from 'ng-apexcharts';
+import { Router, RouterModule, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { ApexChart, ApexXAxis, ApexDataLabels, ApexTitleSubtitle, ApexYAxis } from 'ng-apexcharts';
 
 export type ChartOptions = {
-  series: ApexAxisChartSeries;
+  series: { name: string; data: number[] }[];
   chart: ApexChart;
   xaxis: ApexXAxis;
   dataLabels: ApexDataLabels;
@@ -26,77 +19,81 @@ export type ChartOptions = {
   selector: 'app-admin-warehouse-zones',
   standalone: true,
   templateUrl: './admin-warehouse-zones.component.html',
-  styleUrls: ['./admin-warehouse-zones.component.css'],
-  imports: [CommonModule, NgApexchartsModule]
+  styleUrl: './admin-warehouse-zones.component.css',
+  imports: [CommonModule, NgApexchartsModule, RouterModule]
 })
 export class AdminWarehouseZonesComponent implements OnInit {
-  zones: any[] = [];
   selectedZone: string = '';
   items: any[] = [];
   shelves: any[] = [];
   loadingItems: boolean = false;
-  activeTab: string = 'product';
-  shelfChartOptions!: ChartOptions;
+  activeTab: string = 'items';
+  shelfChartOptions: ChartOptions = {
+    series: [],
+    chart: {
+      type: 'bar',
+      height: 320,
+      stacked: true
+    },
+    xaxis: {
+      categories: []
+    },
+    dataLabels: {
+      enabled: false
+    },
+    title: {
+      text: 'Product Capacity Overview',
+      align: 'left'
+    },
+    colors: ['#F44336', '#4CAF50']
+  };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
 
-  ngOnInit() {
-    this.fetchZones();
-  }
-
-  fetchZones() {
-    this.http.get<any>('http://127.0.0.1:5000/admin/zones').subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.zones = response.zones;
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching zones', error);
-      }
-    });
-  }
+  ngOnInit() {}
 
   fetchItemsByZone(zoneName: string) {
     this.selectedZone = zoneName;
     this.items = [];
     this.shelves = [];
-    this.activeTab = 'product';
+    this.activeTab = 'items';
     this.loadingItems = true;
 
-    this.http.get<any>(`http://127.0.0.1:5000/admin/items_by_zone/${zoneName}`).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.items = response.items;
+    // ✅ Only set items from here — DO NOT update shelves
+    this.http.get<any>(`http://127.0.0.1:5000/admin/items_by_zone/${zoneName}`)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.items = response.items;
+          }
+          this.loadingItems = false;
+        },
+        error: (error) => {
+          console.error('Error fetching items', error);
+          this.loadingItems = false;
         }
-        this.loadingItems = false;
-      },
-      error: (error) => {
-        console.error('Error fetching items', error);
-        this.loadingItems = false;
-      }
-    });
+      });
 
-    this.http.get<any>(`http://127.0.0.1:5000/admin/get_shelves_by_zone/${zoneName}`).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.shelves = response.shelves;
-          this.prepareShelfChartData(); // 🧠 Chart data now prepared only after shelves are fetched
+    // ✅ Only set shelves from here — this is the correct data
+    this.http.get<any>(`http://127.0.0.1:5000/admin/get_shelves_by_zone/${zoneName}`)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.shelves = response.shelves;
+            this.prepareShelfChartData(); // Prepare chart from correct shelf data
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching shelves', error);
         }
-      },
-      error: (error) => {
-        console.error('Error fetching shelves', error);
-      }
-    });
+      });
   }
 
   prepareShelfChartData() {
-    if (!this.shelves || this.shelves.length === 0) return;
-  
     const categories = this.shelves.map(s => s.product || 'Empty');
-    const occupied = this.shelves.map(s => s.occupied ?? 0);
-    const available = this.shelves.map(s => (s.capacity ?? 0) - (s.stock ?? 0));
-  
+    const occupied = this.shelves.map(s => s.occupied);
+    const available = this.shelves.map(s => s.available);
+
     this.shelfChartOptions = {
       series: [
         { name: 'Occupied', data: occupied },
@@ -110,26 +107,10 @@ export class AdminWarehouseZonesComponent implements OnInit {
       xaxis: {
         categories: categories
       },
-      dataLabels: {
-        enabled: false
-      },
-      title: {
-        text: 'Product Capacity Overview',
-        align: 'left'
-      },
-      colors: ['#F44336', '#4CAF50']
+      dataLabels: { enabled: false },
+      colors: ['#F44336', '#4CAF50'],
+      title: { text: 'Product Capacity Overview', align: 'left' }
     };
-  }
-  
-
-  getZoneCardClass(zone: string): string {
-    const map: { [key: string]: string } = {
-      'Zone A': 'bg-info',
-      'Zone B': 'bg-danger',
-      'Zone C': 'bg-warning',
-      'Zone D': 'bg-success'
-    };
-    return map[zone] || 'bg-secondary';
   }
 
   getStatusColor(percent: string): string {

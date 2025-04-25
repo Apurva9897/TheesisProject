@@ -1,7 +1,11 @@
 <div class="register-container">
   <div class="register-box">
     <h2>Register</h2>
-
+     <!-- Registration Message -->
+     <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" role="alert">
+      {{ registrationMessage }}
+      <button type="button" class="btn-close" aria-label="Close" (click)="dismissAlert()"></button>
+    </div>
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
       <!-- Username -->
@@ -29,7 +33,16 @@
       <div *ngIf="passwordStrength" class="strength-msg" [ngClass]="passwordStrength">
         Password strength: {{ passwordStrength | titlecase }}
       </div>
+<!-- Confirm Password -->
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Confirm Password</mat-label>
+  <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" />
+</mat-form-field>
 
+<!-- Error if passwords don't match -->
+<div *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="error">
+  Passwords do not match.
+</div>
       <!-- Role -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Role</mat-label>
@@ -39,33 +52,7 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- Phone -->
-      <!-- Country Code + Phone Number -->
-<div class="d-flex gap-2 full-width">
-  <mat-form-field appearance="outline" style="width: 30%;">
-    <mat-label>Code</mat-label>
-    <mat-select formControlName="countryCode">
-      <mat-option value="+91">+91 </mat-option>
-      <mat-option value="+44">+44 </mat-option>
-      <mat-option value="+1">+1 </mat-option>
-    </mat-select>
-  </mat-form-field>
 
-  <mat-form-field appearance="outline" style="flex: 1;">
-    <mat-label>Phone Number</mat-label>
-    <input matInput formControlName="phone" maxlength="10" (keypress)="allowOnlyNumbers($event)" placeholder="Enter phone number" />
-  </mat-form-field>
-</div>
-
-<!-- Error for Phone -->
-<div *ngIf="phoneLengthError" class="error">{{ phoneLengthError }}</div>
-
-
-      <!-- Address -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Address</mat-label>
-        <input matInput formControlName="address" placeholder="Enter address" />
-      </mat-form-field>
 
       <!-- Buttons -->
 <button mat-raised-button color="primary" type="submit" class="full-width" style="margin-top: 16px;">
@@ -77,12 +64,6 @@
 </button>
 
     </form>
-
-    <!-- Registration Message -->
-    <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" role="alert">
-      {{ registrationMessage }}
-      <button type="button" class="btn-close" aria-label="Close" (click)="dismissAlert()"></button>
-    </div>
     
   </div>
 </div>

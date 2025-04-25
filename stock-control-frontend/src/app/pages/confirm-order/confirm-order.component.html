@@ -1,25 +1,28 @@
 <div class="confirm-order-container">
   <h2>Order Confirmation</h2>
 
-  <div *ngFor="let item of selectedItems" class="order-item">
-    <!--<img [src]="getImagePath(item.image)" alt="{{ item.name }}" class="product-image">-->
-    <img [src]="getImagePath(item.image)" alt="{{ item.name }}" width="150" height="150">
-
-      <div class="details">
-      <h4>{{ item.name }}</h4>
-      <p>Price: ${{ item.price.toFixed(2) }}</p>
-      <p>Quantity: {{ item.quantity }}</p>
-      <p>Subtotal: ${{ item.subtotal }}</p> <!-- ✅ ADD THIS LINE -->
-      <!--<p><strong>Subtotal: ${{ item.subtotal.toFixed(2) }}</strong></p> -->
+  <div *ngFor="let item of selectedItems" class="card mb-3 shadow-sm">
+    <div class="row g-0">
+      <div class="col-md-4 text-center">
+        <img [src]="getImagePath(item.image)" alt="{{ item.name }}" class="img-fluid rounded-start" style="max-height: 150px;">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">{{ item.name }}</h5>
+          <p class="card-text">Price: ${{ item.price.toFixed(2) }}</p>
+          <p class="card-text">Quantity: {{ item.quantity }}</p>
+          <p class="card-text">Subtotal: ${{ item.subtotal }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="total">
+  <div class="total text-end mt-4">
     <h3>Total to Pay: ${{ totalPrice.toFixed(2) }}</h3>
   </div>
 
-  <div class="button-group">
-    <button (click)="goBack()" class="btn-back">Back to Shop</button>
-    <button (click)="payNow()" class="btn-pay">Pay Now</button>
+  <div class="button-group mt-4 text-center">
+    <button (click)="goBack()" class="btn btn-secondary me-3">Back to Shop</button>
+    <button (click)="payNow()" class="btn btn-success">Pay Now</button>
   </div>
 </div>

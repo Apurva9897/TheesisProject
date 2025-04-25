@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // ✅ Import this
-import { Router } from '@angular/router'; // ✅ Import Router
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
 @Component({
   standalone: true,
   selector: 'app-confirm-order',
   templateUrl: './confirm-order.component.html',
   styleUrls: ['./confirm-order.component.css'],
-  imports: [CommonModule] // ✅ Add this line here
+  imports: [CommonModule]
 })
 export class ConfirmOrderComponent implements OnInit {
   selectedItems: any[] = [];
   totalPrice: number = 0;
+  email: string = '';
+  orderId: string = '';  // Add this if you're storing order ID
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
@@ -23,11 +26,12 @@ export class ConfirmOrderComponent implements OnInit {
       console.error("❌ Email or items missing in navigation state");
       return;
     }
-  
+
+    this.email = navigation.email;
     this.selectedItems = navigation.items;
-  
+
     this.http.post<any>('http://127.0.0.1:5000/customer_dashboard/confirm_order', {
-      email: navigation.email,
+      email: this.email,
       items: this.selectedItems.map(item => ({
         product_id: item.id,
         quantity: item.quantity
@@ -35,35 +39,46 @@ export class ConfirmOrderComponent implements OnInit {
     }).subscribe(response => {
       if (response.success) {
         this.totalPrice = response.total_price;
-  
+        this.orderId = `ORD${100 + Math.floor(Math.random() * 1000)}`;  // TEMP ID
+
         this.selectedItems = response.items.map((item: any) => ({
           ...item,
           subtotal: item.price * item.quantity,
-          image: item.image  // ✅ Already comes like DellXPS15.png
+          image: item.image
         }));
       }
     });
   }
-  
 
   getImagePath(fileName: string): string {
-    if (!fileName) {
-      return 'assets/default.png';  // fallback if no image
-    }
-    return `assets/${fileName}`;
+    return fileName ? `assets/${fileName}` : 'assets/default.png';
   }
-  
+
   goBack(): void {
     this.router.navigate(['/client-dashboard']);
   }
 
-  updateBasket(): void {
-    this.router.navigate(['/client-dashboard']);
-  }
-
   payNow(): void {
-    // 🚀 This can be empty for now, or show a success alert
-    alert('Payment Successful! Thank you for your purchase.');
+    this.http.post<any>('http://127.0.0.1:5000/customer_dashboard/send_order_receipt', {
+      email: this.email,
+      order_id: this.orderId,
+      total_price: this.totalPrice,
+      items: this.selectedItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity
+      }))
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          alert("Payment confirmed! Please check your email for receipt.");
+        } else {
+          alert("Payment confirmed but receipt email failed.");
+        }
+      },
+      error: (err) => {
+        console.error("Email failed to send", err);
+        alert("Payment confirmed but receipt email failed to send.");
+      }
+    });
   }
-
 }

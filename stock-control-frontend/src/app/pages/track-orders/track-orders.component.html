@@ -19,10 +19,13 @@
     </div>
 
     <!-- Product Info -->
-    <div class="order-info">
-      <strong>{{ order.product_name }}</strong>
-      <p>Items: {{ order.items }} | Quantity: {{ order.quantity }} | Total: {{ order.total }}</p>
-    </div>
+<div class="order-info">
+  <div *ngFor="let item of order.items">
+    <strong>{{ item.name }}</strong> - Quantity: {{ item.quantity }}
+  </div>
+  <p><strong>Total:</strong> {{ order.total }}</p>
+</div>
+
 
     <!-- Status Tracker -->
     <div class="status-tracker">

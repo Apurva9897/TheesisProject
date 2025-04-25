@@ -134,7 +134,7 @@ class Product(db.Model):
 
     # Link to Order Details
     order_details = db.relationship("OrderDetails", back_populates="product", lazy=True)
-
+    #shelf_id = db.Column(db.Integer, db.ForeignKey('shelf.id'))
 # -------------------- Inventory Model --------------------
 class Inventory(db.Model):
     __tablename__ = 'inventory'
@@ -188,4 +188,4 @@ class Shelf(db.Model):
 
     # Relationship to Product
     product = db.relationship("Product", backref="shelf")        # Access shelf from product
-
+    #product = db.relationship('Product', uselist=False, backref='shelf')

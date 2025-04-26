@@ -4,6 +4,8 @@ from datetime import datetime
 from flask import session
 from sqlalchemy import text 
 from utils.email_utils import send_email
+import random
+from datetime import timedelta
 
 customer_dashboard_bp = Blueprint('customer_dashboard', __name__)
 
@@ -260,3 +262,36 @@ Universal Computer Warehouse
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+
+@customer_dashboard_bp.route('/send_otp', methods=['POST'])
+def send_otp():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'success': False, 'message': 'Email is required'}), 400
+
+    otp = str(random.randint(100000, 999999))
+
+    # Send OTP via Email
+    subject = "🔐 Your OTP for Registration"
+    body = f"""
+Hi there,
+
+Your One-Time Password (OTP) for completing your registration is: {otp}
+
+This OTP is valid for 5 minutes.
+
+If you did not request this, please ignore this email.
+
+Best regards,
+Universal Computer Warehouse
+"""
+    send_success = send_email(email, subject, body)
+
+    if send_success:
+        # ✅ Now also return OTP in the response for frontend check (secretly!)
+        return jsonify({'success': True, 'message': 'OTP sent successfully', 'otp': otp}), 200
+    else:
+        return jsonify({'success': False, 'message': 'Failed to send OTP'}), 500

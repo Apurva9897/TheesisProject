@@ -60,3 +60,87 @@ button.mat-raised-button.mat-accent {
   margin-top: 10px;
   font-size: 13px;
 }
+
+/* Disabled fields styling */
+input:disabled, button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Add visual indication for verified email */
+.email-verified {
+  border-left: 4px solid green !important;
+}
+
+/* Alert styling */
+.alert {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+  color: #856404;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+/* OTP verification section */
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* Cross Button inside alert neatly */
+.alert-with-close {
+  position: relative;
+  padding-right: 35px; /* space for cross button */
+}
+
+.alert-with-close .small-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 0.9rem;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+/* OTP Timer style */
+.otp-timer {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #555;
+}

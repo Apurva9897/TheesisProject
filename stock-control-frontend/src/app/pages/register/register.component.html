@@ -2,10 +2,11 @@
   <div class="register-box">
     <h2>Register</h2>
      <!-- Registration Message -->
-     <div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" role="alert">
-      {{ registrationMessage }}
-      <button type="button" class="btn-close" aria-label="Close" (click)="dismissAlert()"></button>
-    </div>
+     <!-- Registration Message with Cross Button -->
+<div *ngIf="registrationMessage" [ngClass]="registrationMessageClass" role="alert" class="alert-with-close">
+  <span>{{ registrationMessage }}</span>
+  <button type="button" class="btn-close small-close" aria-label="Close" (click)="dismissAlert()"></button>
+</div>
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
       <!-- Username -->
@@ -17,32 +18,65 @@
       <!-- Email -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="Enter email" />
+        <input matInput type="email" formControlName="email" placeholder="Enter email" [disabled]="emailFieldDisabled" />
       </mat-form-field>
+      
+      <!-- Send OTP Button -->
+      <div class="d-flex align-items-center my-2">
+        <button mat-raised-button color="primary" type="button" (click)="sendOTP()" 
+                [disabled]="emailFieldDisabled || otpSent" style="margin-right: 8px;">
+          Send OTP
+        </button>
+
+        <!-- Resend OTP Button (enabled after 5 min) -->
+        <button *ngIf="resendButtonEnabled" mat-raised-button color="warn" type="button" (click)="sendOTP()">
+          Resend OTP
+        </button>
+      </div>
+
+      <!-- Enter OTP Field -->
+      <div *ngIf="otpSent && !otpVerified" class="my-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Enter OTP</mat-label>
+          <input matInput [(ngModel)]="otpValue" [ngModelOptions]="{standalone: true}" maxlength="6" placeholder="Enter 6-digit OTP" />
+        </mat-form-field>
+        <div *ngIf="otpSent && !otpVerified && !resendButtonEnabled" class="otp-timer">
+          OTP expires in {{ minutes }}:{{ seconds | number: '2.0' }}
+        </div>
+        <button mat-raised-button color="accent" type="button" (click)="verifyOTP()">
+          Verify OTP
+        </button>
+      </div>
 
       <!-- Password -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
-        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" (input)="checkPasswordStrength()" />
-        <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
+        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" 
+               (input)="checkPasswordStrength()" [disabled]="!otpVerified" />
+        <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button" [disabled]="!otpVerified">
           <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </mat-form-field>
 
       <!-- Password Strength -->
-      <div *ngIf="passwordStrength" class="strength-msg" [ngClass]="passwordStrength">
+      <div *ngIf="passwordStrength && otpVerified" class="strength-msg" [ngClass]="passwordStrength">
         Password strength: {{ passwordStrength | titlecase }}
       </div>
-<!-- Confirm Password -->
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Confirm Password</mat-label>
-  <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" />
-</mat-form-field>
+      
+      <!-- Confirm Password -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" [disabled]="!otpVerified" />
+        <button mat-icon-button matSuffix (click)="showConfirmPassword = !showConfirmPassword" type="button" [disabled]="!otpVerified">
+          <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
 
-<!-- Error if passwords don't match -->
-<div *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="error">
-  Passwords do not match.
-</div>
+      <!-- Error if passwords don't match -->
+      <div *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="error">
+        Passwords do not match.
+      </div>
+      
       <!-- Role -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Role</mat-label>
@@ -52,18 +86,15 @@
         </mat-select>
       </mat-form-field>
 
-
-
       <!-- Buttons -->
-<button mat-raised-button color="primary" type="submit" class="full-width" style="margin-top: 16px;">
-  Register
-</button>
+      <button mat-raised-button color="primary" type="submit" class="full-width" style="margin-top: 16px;" [disabled]="!otpVerified">
+        Register
+      </button>
 
-<button mat-raised-button color="accent" type="button" (click)="goToLogin()" class="full-width" style="margin-top: 10px;">
-  Back to Login
-</button>
+      <button mat-raised-button color="accent" type="button" (click)="goToLogin()" class="full-width" style="margin-top: 10px;">
+        Back to Login
+      </button>
 
     </form>
-    
   </div>
 </div>

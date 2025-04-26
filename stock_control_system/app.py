@@ -9,22 +9,23 @@ from routes.auth_routes import auth_bp
 from routes.admin_routes import admin_bp
 from routes.customer_routes import customer_bp
 from routes.customer_dashboard_routes import customer_dashboard_bp
-from config import Config
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://localhost:4200"])
 app.config.from_object(Config)
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:4200"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
+# Configure CORS properly with all needed settings
+CORS(app, 
+     resources={r"/*": {
+         "origins": "http://localhost:4200",
+         "supports_credentials": True,
+         "allow_headers": ["Content-Type", "Authorization", "content-type"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+     }}
+)
+
 # Initialize database
 db.init_app(app)
-migrate = Migrate(app, db) 
-CORS(app)
-
+migrate = Migrate(app, db)
 
 # Initialize login manager
 login_manager = LoginManager()

@@ -148,14 +148,14 @@ searchedSupplierOrder: any = null;
         if (res.success) {
           this.searchedClientOrder = {
             order_id: res.order_id,
-            placed_on: res.order_date,
             status: res.status,
-            total: res.total_cost,
-            items: res.products.map((item: any) => ({
-              name: item.name,
-              quantity: item.quantity,
-              unit_price: item.unit_price,
-              subtotal: item.subtotal
+            order_date: res.order_date,
+            total_cost: res.total_cost,
+            products: res.products.map((product: any) => ({
+              name: product.name,
+              quantity: product.quantity,
+              unit_price: product.unit_price,
+              subtotal: product.subtotal
             }))
           };
         } else {
@@ -164,10 +164,12 @@ searchedSupplierOrder: any = null;
         }
       },
       error: () => {
+        this.searchedClientOrder = null;
         alert("Error searching client order.");
       }
     });
   }
+  
   
   closeClientOrderCard() {
     this.searchedClientOrder = null;
@@ -177,24 +179,32 @@ searchedSupplierOrder: any = null;
   searchSupplierOrder() {
     if (!this.supplierOrderSearchId) return;
   
-    this.http.get<any>(`http://127.0.0.1:5000/admin/search_supplier_order/${this.supplierOrderSearchId}`)
+    const orderId = this.supplierOrderSearchId.trim();
+    this.http.get<any>(`http://127.0.0.1:5000/admin/search_supplier_order/${orderId}`)
       .subscribe({
         next: (res) => {
           if (res.success) {
             this.searchedSupplierOrder = {
-              order_id: this.supplierOrderSearchId,
+              order_id: orderId,
               supplier: res.supplier,
               order_date: res.order_date,
               total_amount: res.total_amount,
-              items: res.items
+              items: res.items.map((item: any) => ({
+              product_name: item.product_name,
+              quantity: item.quantity,
+              unit_price: item.unit_price
+              }))
             };
+          } else {
+            this.searchedSupplierOrder = null;
+            alert("Supplier order not found.");
           }
         },
         error: () => {
           this.searchedSupplierOrder = null;
-          alert("Supplier Order not found");
+          alert("Error searching supplier order.");
         }
       });
-  }
+  }  
   
 }

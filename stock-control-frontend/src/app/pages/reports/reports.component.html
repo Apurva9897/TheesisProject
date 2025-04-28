@@ -125,8 +125,11 @@
         <p class="mb-2"><strong>Order Date:</strong> {{ searchedClientOrder.order_date }}</p>
         <p class="mb-2"><strong>Total:</strong> ${{ searchedClientOrder.total_cost.toFixed(2) }}</p>
         <ul class="list-unstyled">
-          <li class="mb-1" *ngFor="let item of searchedClientOrder.products">
-            {{ item.name }} – Qty: {{ item.quantity }}, Unit Price: ${{ item.unit_price.toFixed(2) }}, Subtotal: ${{ item.subtotal.toFixed(2) }}
+          <li class="mb-3" *ngFor="let item of searchedClientOrder.products">
+            <strong>{{ item.name }}</strong><br>
+            Qty: {{ item.quantity }}<br>
+            Unit Price: ${{ item.unit_price.toFixed(2) }}<br>
+            Subtotal: ${{ item.subtotal.toFixed(2) }}
           </li>
         </ul>
       </div>

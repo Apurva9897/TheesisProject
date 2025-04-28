@@ -40,10 +40,12 @@ export class ConfirmOrderComponent implements OnInit {
       if (response.success) {
         this.totalPrice = response.total_price;
         this.orderId = response.order_id;  // TEMP ID
-
         this.selectedItems = response.items.map((item: any) => ({
-          ...item,
-          subtotal: item.price * item.quantity,
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          subtotal: item.subtotal,   // ✅ USE backend subtotal directly
           image: item.image
         }));
       }

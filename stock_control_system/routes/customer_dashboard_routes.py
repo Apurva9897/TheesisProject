@@ -158,38 +158,49 @@ def confirm_order():
         items = data.get('items', [])
         if not email or not items:
             return jsonify({"success": False, "message": "Invalid data"}), 400
-        # Find the customer
+
         customer = Customer.query.filter_by(email=email).first()
         if not customer:
             return jsonify({"success": False, "message": "Customer not found"}), 404
-        # Create new Order
+
         new_order = Order(
             customer_id=customer.id,
             customer_email=customer.email,
             status="Pending",
-            total_amount=0  # We will calculate later
+            total_amount=0
         )
         db.session.add(new_order)
-        db.session.flush()  # Get Order ID before committing
+        db.session.flush()
         new_order.custom_order_id = f"ORD{new_order.id}"
+
         total_price = 0
         updated_items = []
+        low_stock_alerts = []  # <-- ✅ collect low stock products here
+
         for item in items:
             product_id = item.get('product_id')
             quantity = item.get('quantity')
             if not product_id or not quantity:
                 continue
+
             product = Product.query.get(product_id)
             if not product:
                 continue
+
             if product.stock < quantity:
                 return jsonify({"success": False, "message": f"Not enough stock for {product.name}"}), 400
+
             subtotal = float(product.price) * quantity
             total_price += subtotal
-            # Update product stock and sold quantity
+
             product.stock -= quantity
-            product.sold_quantity += quantity  # ✅ Increase sold quantity
-            # Insert into OrderDetails
+            product.sold_quantity += quantity
+
+            # ✅ Check low stock
+            threshold = 10
+            if product.stock <= threshold:
+                low_stock_alerts.append(f"- {product.name}: {product.stock} units left")
+
             order_detail = OrderDetails(
                 order_id=new_order.id,
                 product_id=product.id,
@@ -198,7 +209,7 @@ def confirm_order():
                 subtotal=subtotal
             )
             db.session.add(order_detail)
-            # For frontend response
+
             updated_items.append({
                 "id": product.id,
                 "name": product.name,
@@ -207,16 +218,38 @@ def confirm_order():
                 "subtotal": subtotal,
                 "image": product.name.replace(' ', '') + ".png"
             })
-        # Update total amount in Order
+
         new_order.total_amount = round(total_price, 2)
-        # Commit all changes
         db.session.commit()
+
+        # ✅ AFTER committing all changes, now send a single email if needed
+        if low_stock_alerts:
+            subject = "⚠️ Low Stock Alerts Summary"
+            body = f"""
+Dear Admin,
+
+The following products have low stock levels:
+
+{chr(10).join(low_stock_alerts)}
+
+Please consider reordering these items soon.
+
+Thanks,
+Universal Computer Warehouse System
+"""
+            admin_users = User.query.filter_by(role="admin").all()
+            admin_emails = [admin.email for admin in admin_users]
+
+            for admin_email in admin_emails:
+                send_email(admin_email, subject, body)
+
         return jsonify({
             "success": True,
             "total_price": float(new_order.total_amount),
             "order_id": new_order.formatted_id,
             "items": updated_items
         }), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": "Error confirming order", "error": str(e)}), 500

@@ -58,8 +58,10 @@ export class DashboardHomeComponent implements OnInit {
             this.pendingOrders = response.pending_orders;
             this.lowStockList = response.low_stock || [];
             console.log('Low Stock Response:', response.low_stock);
-
-
+            if (this.lowStockList.length > 0) {
+              this.showLowStockAlert();  
+            }
+          
             // ✅ For Top Sold
   this.topSoldSeries = [{
   name: 'Top Sold',

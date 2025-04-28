@@ -109,7 +109,7 @@ timerInterval: any;
     }
 
     if (this.registerForm.valid) {
-      const formValue = this.registerForm.value;
+      const formValue = this.registerForm.getRawValue();
       const submissionData = {
         ...formValue
       };

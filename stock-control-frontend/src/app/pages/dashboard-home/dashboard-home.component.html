@@ -10,14 +10,14 @@
 
 
  <!-- 🔵 Low Stock Alert Message (Compact and Closable) -->
-<div *ngIf="lowStockAlertVisible" class="alert alert-primary d-flex justify-content-between align-items-start mt-3" role="alert">
-  <div class="d-flex align-items-center">
-    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
-      <use xlink:href="#info-fill" />
-    </svg>
-    <div [innerHTML]="lowStockAlertMessage"></div>
+ <div *ngIf="lowStockAlertVisible" class="simple-alert-box" role="alert">
+  <div class="alert-icon">
+    <i class="fas fa-exclamation-triangle"></i>
   </div>
-  <button type="button" class="btn-close ms-3" aria-label="Close" (click)="lowStockAlertVisible = false"></button>
+  <div class="alert-content" [innerHTML]="lowStockAlertMessage"></div>
+  <button type="button" class="alert-close" aria-label="Close" (click)="lowStockAlertVisible = false">
+    <i class="fas fa-times"></i>
+  </button>
 </div>
 
 

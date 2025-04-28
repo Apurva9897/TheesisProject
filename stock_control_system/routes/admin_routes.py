@@ -566,3 +566,20 @@ def search_supplier_order(order_id):
 
     except Exception as e:
         return jsonify({"success": False, "message": "Server error", "error": str(e)}), 500
+
+@admin_bp.route('/get_low_stock_alerts', methods=['GET'])
+def get_low_stock_alerts():
+    try:
+        threshold = 10  # ⚡ You can change this to whatever low-stock threshold you want
+        low_stock_products = Product.query.filter(Product.stock <= threshold).all()
+
+        product_list = [{
+            'name': p.name,
+            'stock': p.stock
+        } for p in low_stock_products]
+
+        return jsonify({"success": True, "low_stock_products": product_list}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+

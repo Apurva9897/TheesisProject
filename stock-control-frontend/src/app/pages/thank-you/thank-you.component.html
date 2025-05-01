@@ -1,0 +1,26 @@
+<div class="thank-you-container">
+    <div class="thank-you-card">
+      <h1>🎉 Thank You for Shopping with <span class="brand-name">Universal Warehouse</span>!</h1>
+      <p class="message">Your order <strong>#{{ orderId }}</strong> has been successfully placed.</p>
+  
+      <div class="items-section">
+        <h3>Items Purchased:</h3>
+        <ul>
+          <li *ngFor="let item of items">
+            {{ item.name }} – Quantity: {{ item.quantity }}, Subtotal: ${{ item.subtotal.toFixed(2) }}
+          </li>
+        </ul>
+      </div>
+  
+      <h3 class="total">💳 Total Paid: ${{ totalPrice.toFixed(2) }}</h3>
+  
+      <p class="delivery">🚚 Your order will be delivered within 3–4 working days.</p>
+      <p class="email-note">📧 Please check your email for a confirmation receipt.</p>
+  
+      <div class="button-group">
+        <button class="btn logout" (click)="logout()">Logout</button>
+        <button class="btn home" (click)="goToHome()">Go to Homepage</button>
+      </div>
+    </div>
+  </div>
+  

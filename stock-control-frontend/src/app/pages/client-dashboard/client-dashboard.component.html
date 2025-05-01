@@ -1,33 +1,39 @@
-<div class="container-fluid">
+<div class="container-fluid p-0">
   <!-- Top Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top px-4">
-    <a class="navbar-brand fw-bold" href="#">MyShop</a>
+  <nav class="navbar navbar-expand-lg custom-navbar fixed-top px-4">
+    <a class="navbar-brand fancy-brand fw-bold" href="#">Universal Warehouse</a>
 
     <div class="ms-auto d-flex align-items-center gap-4">
-      <div id="liveAlertPlaceholder" style="position: fixed; top: 80px; right: 20px; z-index: 1050;"></div>
+      <div
+  *ngIf="showToast"
+  class="custom-toast position-fixed top-0 end-0 m-3"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+>
+  <div class="toast-body">
+    ✅ {{ toastMessage }}
+  </div>
+</div>
 
-      <a (click)="goToTrackOrders()" class="text-white fw-semibold text-decoration-none" style="cursor: pointer;">Track Orders</a>
+      <!-- ✅ FIXED: Made all text black for consistency -->
+      <a (click)="goToTrackOrders()" class="fw-semibold text-decoration-none" style="cursor: pointer;">Track Orders</a>
 
-      <!-- Dropdown -->
       <div class="dropdown">
-        <button class="btn btn-success dropdown-toggle" type="button" (click)="toggleDropdown()">
-          My Account
-        </button>
+        <button class="btn btn-success dropdown-toggle" type="button" (click)="toggleDropdown()">My Account</button>
         <ul *ngIf="dropdownOpen" class="dropdown-menu dropdown-menu-end show" style="position: absolute;">
           <li><a class="dropdown-item" (click)="goToUpdateProfile()">Update Profile</a></li>
           <li><a class="dropdown-item" (click)="signOut()">Sign Out</a></li>
         </ul>
       </div>
-
-      <a (click)="viewBasket()" class="text-white text-decoration-none" style="cursor: pointer;">View Basket</a>
-
-      <span class="text-white fw-semibold">Total: <span class="badge bg-success">{{ total }}</span></span>
+      <a (click)="viewBasket()" class="text-decoration-none" style="cursor: pointer;">View Basket</a>
+      <span class="fw-semibold">Total: <span class="badge bg-success">{{ total }}</span></span>
     </div>
   </nav>
 
-  <div class="row" style="margin-top: 70px;">
+  <div class="row">
     <!-- Sidebar -->
-    <div class="col-md-2 border-end bg-light py-4 px-3">
+    <div class="col-md-2 sidebar-filter py-4 px-3">
       <h5 class="fw-bold mb-4">Filter by</h5>
 
       <div class="mb-3">
@@ -58,7 +64,7 @@
         </select>
       </div>
 
-      <button (click)="resetFilters()" class="btn btn-outline-secondary w-100">Clear Filters</button>
+      <button (click)="resetFilters()" class="btn btn-light w-100">Clear Filters</button>
     </div>
 
     <!-- Main Content -->
@@ -68,7 +74,7 @@
         <h4 class="mt-3">Featured Products</h4>
         <hr>
 
-        <!-- ✅ UPDATED: Bootstrap 3-column card layout -->
+        <!-- Bootstrap 3-column card layout -->
         <div class="row row-cols-1 row-cols-md-3 g-4">
           <div class="col" *ngFor="let product of filteredProducts">
             <div class="card h-100 shadow-sm">
@@ -101,7 +107,7 @@
                           [disabled]="product.stock === 0 || orderQuantities[product.id] >= product.stock">+</button>
                 </div>
 
-                <button class="btn btn-success mt-auto w-100"
+                <button class="btn custom-green-btn mt-auto w-100"
                         (click)="addToCart(product.id)"
                         [disabled]="product.stock === 0 || orderErrors[product.id]">
                   Add to Cart
@@ -110,7 +116,6 @@
             </div>
           </div>
         </div>
-        <!-- ✅ END of Bootstrap 3-card layout -->
       </div>
 
       <!-- Other Sections -->

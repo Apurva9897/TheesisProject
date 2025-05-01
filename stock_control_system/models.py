@@ -16,7 +16,8 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'admin' or 'client'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    is_approved = db.Column(db.Boolean, default=False)
+    approval_token = db.Column(db.String(64), unique=True, nullable=True)
     # Relationships
     customer = db.relationship("Customer", back_populates="user", uselist=False, cascade="all, delete-orphan")
     admin = db.relationship("Admin", back_populates="user", uselist=False, cascade="all, delete-orphan")

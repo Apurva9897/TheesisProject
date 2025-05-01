@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from pytz import timezone  
 from sqlalchemy import and_
 from models import Shelf
-
+from models import User
 admin_bp = Blueprint('admin_bp', __name__)  # ✅ Make sure this is already there
 
 # ---------- Existing dashboard route ----------
@@ -583,3 +583,43 @@ def get_low_stock_alerts():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+@admin_bp.route('/approve_admin', methods=['POST'])
+def approve_admin():
+    data = request.json
+    email_to_approve = data.get('email')
+
+    if not email_to_approve:
+        return jsonify({"success": False, "message": "Email is required"}), 400
+
+    # Optional: restrict access so only head admin can approve
+    approver_email = request.headers.get('X-Admin-Email')
+    if approver_email != "apu1098avk@gmail.com":
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    user = User.query.filter_by(email=email_to_approve, role='admin').first()
+
+    if not user:
+        return jsonify({"success": False, "message": "Admin not found"}), 404
+
+    user.is_approved = True
+    db.session.commit()
+
+    return jsonify({"success": True, "message": f"{email_to_approve} approved as admin"}), 200
+
+@admin_bp.route('/apply_discount', methods=['POST'])
+def apply_discount():
+    try:
+        data = request.get_json()
+        product_id = data.get('product_id')
+        discount = data.get('discount_percent')
+
+        product = Product.query.get(product_id)
+        if not product:
+            return jsonify({"success": False, "message": "Product not found"}), 404
+
+        product.discount_percent = discount
+        db.session.commit()
+
+        return jsonify({"success": True, "message": f"{discount}% discount applied"}), 200
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500

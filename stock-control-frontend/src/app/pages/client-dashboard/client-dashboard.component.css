@@ -7,39 +7,20 @@
 }
 
 /* 2. Sidebar */
-.sidebar {
-  width: 230px;
-  background-color: #ffffff;
+.col-md-2 {
+  background-color: #4682B4 !important; 
+  border-right: 1px solid #ccc;
   padding: 20px;
-  border-right: 1px solid #dee2e6;
+  border-radius: 0 12px 12px 0;
+  margin-top: 0; /* ✅ FIXED: Remove margin to eliminate whitespace */
+  min-height: calc(100vh - 60px); /* Fill remaining vertical space */
 }
 
-.sidebar h3 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #343a40;
-}
-
-.filter-section {
-  margin-bottom: 20px;
-}
-
-.filter-section label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  display: block;
-}
-
-.filter-section select {
-  width: 100%;
-  padding: 6px 10px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-}
-
-.filter-buttons {
-  text-align: center;
-  margin-top: 15px;
+.col-md-2 label,
+.col-md-2 select,
+.col-md-2 h5 {
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* 3. Navbar */
@@ -49,38 +30,41 @@
   left: 0;
   right: 0;
   height: 60px;
-  background-color: #212529;
-  color: white;
+  background-color: #4682B4  !important; /* Light purple-blue */
+  color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
   z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand {
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #3f3f3f !important;
 }
 
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.navbar-links a {
-  color: white;
+/* ✅ FIXED: Consistent navbar link styling */
+.navbar a, 
+.navbar .text-white {
+  color: #333 !important; /* Make all text black */
+  font-weight: 500;
   text-decoration: none;
-  font-size: 16px;
-  font-weight: normal;
 }
 
-.navbar-links a:hover {
+.navbar a:hover {
   text-decoration: underline;
 }
 
+/* Make all badges visible with appropriate contrast */
+.navbar .badge {
+  color: white !important;
+}
+
+/* Dropdown */
 .dropdown > div {
   background-color: white;
   color: black;
@@ -106,10 +90,15 @@
 /* 4. Content */
 .content {
   margin-left: 230px;
-  margin-top: 60px;
+  margin-top: 60px; /* Keep space for fixed navbar */
   padding: 30px;
   background-color: #f8f9fa;
   flex-grow: 1;
+}
+
+/* ✅ FIXED: Adjust main content to align with navbar */
+.col-md-10 {
+  padding-top: 70px; /* Add padding to account for navbar height */
 }
 
 .welcome-text {
@@ -244,7 +233,7 @@ hr {
 }
 
 .add-to-cart-btn {
-  background-color: #198754;
+  background-color: #3ac484;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -283,3 +272,106 @@ hr {
 .confirm-order-btn:hover {
   background-color: #0b5ed7;
 }
+
+/* Toast Styles */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1060;
+}
+
+.toast {
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  animation: fadeOut 3s forwards;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+/* ✅ FIXED: Additional fixes for row spacing */
+.row {
+  margin-top: 0 !important;
+}
+
+/* Fix for card styling consistency */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* Make card images more consistent */
+.card-img-top {
+  background-color: #f8f9fa;
+  padding: 15px;
+}
+
+/* Improved button styling */
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  transition: background-color 0.2s;
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+/* Improve dropdown menu appearance */
+.dropdown-menu {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  border: none;
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f3fa;
+}
+.btn-success {
+  color: #333 !important;
+}
+
+.custom-toast {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Darker green text */
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  padding: 12px 16px;
+  min-width: 250px;
+  z-index: 1055;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  transition: none !important; /* ✅ remove fade-in/out animations */
+}
+.custom-green-btn {
+  background-color: #a8e6a1;  /* ✅ medium-light green */
+  color: #1b3815;             /* darker text for contrast */
+  border: 1px solid #8cd88c;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.custom-green-btn:hover {
+  background-color: #94dc90;  /* slightly deeper on hover */
+}
+

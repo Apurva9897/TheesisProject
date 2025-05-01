@@ -11,7 +11,7 @@ import { AdminWarehouseZonesComponent } from './pages/admin-warehouse-zones/admi
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { SupplierOrderComponent } from './pages/supplier-order/supplier-order.component';
 import { ReportsComponent } from './pages/reports/reports.component'; 
-
+import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, 
     { path: 'login', component: LoginComponent },
@@ -34,6 +34,7 @@ export const routes: Routes = [
     { path: 'confirm-order', component: ConfirmOrderComponent },
     { path: 'update-profile', component: UpdateProfileComponent }, 
     { path: 'track-orders', component: TrackOrdersComponent },
+    { path: 'thank-you', component: ThankYouComponent },
    
 ];
 

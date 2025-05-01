@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Approval</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      padding: 40px;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+    p {
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .approve {
+      background-color: #28a745;
+      color: white;
+    }
+    .reject {
+      background-color: #dc3545;
+      color: white;
+    }
+    .message {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {% if status == "pending" %}
+      <h1>Admin Approval</h1>
+      <p>Do you want to approve <strong>{{ user_email }}</strong> as an admin?</p>
+      <form method="POST">
+        <button name="action" value="approve" class="btn approve">✅ Approve</button>
+        <button name="action" value="reject" class="btn reject">❌ Reject</button>
+      </form>
+    {% elif status == "approved" %}
+      <div class="message" style="color: green;">✅ {{ user_email }} has been approved as admin.</div>
+    {% elif status == "rejected" %}
+      <div class="message" style="color: red;">❌ {{ user_email }} has been rejected as admin.</div>
+    {% else %}
+      <div class="message">⚠️ Invalid or expired approval link.</div>
+    {% endif %}
+  </div>
+</body>
+</html>

@@ -11,6 +11,7 @@ interface Product {
   price: number;
   stock: number;
   sold_quantity: number;
+
 }
 
 @Component({
@@ -28,6 +29,8 @@ export class ClientDashboardComponent implements OnInit {
   selectedStock: string = '';
   selectedPrice: string = '';
   dropdownOpen = false;
+  toastMessage: string = '';
+  showToast: boolean = false;
   
 
   customerName = 'Universal Computer Warehouse';
@@ -155,7 +158,12 @@ export class ClientDashboardComponent implements OnInit {
       return;
     }
   
-    alert(`Added ${quantity} ${product.name}(s) to your cart.`);
+    this.toastMessage = `Added ${quantity} ${product.name}(s) to your cart.`;
+this.showToast = true;
+
+setTimeout(() => {
+  this.showToast = false;
+}, 3000);
   
     // ✅ Increment cart item count
     this.total += quantity;
@@ -226,18 +234,23 @@ viewBasket(): void {
     .map(p => `${p.name} - Quantity: ${this.orderQuantities[p.id]}`)
     .join('<br>');
 
-  const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-  if (alertPlaceholder) {
-    alertPlaceholder.innerHTML = ''; // clear previous alerts
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-      <div class="alert alert-info alert-dismissible" role="alert" style="max-height: 300px; overflow-y: auto;">
-        <div><strong>Your Basket:</strong><br>${itemsInBasket || 'No items in basket.'}</div>
-        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="document.getElementById('liveAlertPlaceholder').innerHTML = '';">Close</button>
-      </div>`;
-    alertPlaceholder.append(wrapper);
+  const toastContainer = document.getElementById('toastContainer');
+  if (toastContainer) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `<div class="toast-body"><strong>Your Basket:</strong><br>${itemsInBasket || 'No items in basket.'}</div>`;
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
   }
 }
+
 
   
 }

@@ -72,7 +72,14 @@ export class ConfirmOrderComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         if (res.success) {
-          alert("Payment confirmed! Please check your email for receipt.");
+          this.router.navigate(['/thank-you'], {
+            state: {
+              email: this.email,
+              items: this.selectedItems,
+              totalPrice: this.totalPrice,
+              orderId: this.orderId
+            }
+          });
         } else {
           alert("Payment confirmed but receipt email failed.");
         }

@@ -234,23 +234,30 @@ viewBasket(): void {
     .map(p => `${p.name} - Quantity: ${this.orderQuantities[p.id]}`)
     .join('<br>');
 
-  const toastContainer = document.getElementById('toastContainer');
-  if (toastContainer) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.setAttribute('role', 'alert');
-    toast.setAttribute('aria-live', 'assertive');
-    toast.setAttribute('aria-atomic', 'true');
-    toast.innerHTML = `<div class="toast-body"><strong>Your Basket:</strong><br>${itemsInBasket || 'No items in basket.'}</div>`;
+  this.toastMessage = itemsInBasket
+    ? `🛒 <strong>Your Basket:</strong><br>${itemsInBasket}`
+    : `🛒 <strong>Your Basket is empty.</strong>`;
 
-    toastContainer.appendChild(toast);
+  this.showToast = true;
 
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
+  setTimeout(() => {
+    this.showToast = false;
+  }, 4000);
+
+  const modal = new (window as any).bootstrap.Modal(document.getElementById('basketModal'));
+  modal.show();
 }
 
+removeItem(productId: number): void {
+  this.orderQuantities[productId] = 0;
+  this.updateTotal();
+}
 
+updateTotal(): void {
+  this.total = this.products.reduce((sum, product) => {
+    const quantity = this.orderQuantities[product.id] || 0;
+    return sum + quantity * product.price;
+  }, 0);
+}
   
 }

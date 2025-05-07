@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from models import db, User, Customer, Admin
 from utils.email_utils import send_email
 from uuid import uuid4
+
+
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['POST'])

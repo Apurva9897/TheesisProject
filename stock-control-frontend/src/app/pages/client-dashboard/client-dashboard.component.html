@@ -11,16 +11,22 @@
   aria-live="assertive"
   aria-atomic="true"
 >
-  <div class="toast-body">
-    ✅ {{ toastMessage }}
-  </div>
+<div class="toast-body pe-4">
+  <div [innerHTML]="toastMessage"></div>
+</div>
+<button
+  type="button"
+  class="btn-close position-absolute top-0 end-0 mt-2 me-2"
+  aria-label="Close"
+  (click)="showToast = false"
+></button>
 </div>
 
       <!-- ✅ FIXED: Made all text black for consistency -->
-      <a (click)="goToTrackOrders()" class="fw-semibold text-decoration-none" style="cursor: pointer;">Track Orders</a>
+      <a (click)="goToTrackOrders()" class="btn btn-success dropdown-toggle"  class="fw-semibold text-decoration-none" style="cursor: pointer;">Track Orders</a>
 
       <div class="dropdown">
-        <button class="btn btn-success dropdown-toggle" type="button" (click)="toggleDropdown()">My Account</button>
+        <button class="btn btn-success dropdown-toggle"  class="fw-semibold text-decoration-none" type="button" (click)="toggleDropdown()">My Account</button>
         <ul *ngIf="dropdownOpen" class="dropdown-menu dropdown-menu-end show" style="position: absolute;">
           <li><a class="dropdown-item" (click)="goToUpdateProfile()">Update Profile</a></li>
           <li><a class="dropdown-item" (click)="signOut()">Sign Out</a></li>
@@ -30,6 +36,8 @@
       <span class="fw-semibold">Total: <span class="badge bg-success">{{ total }}</span></span>
     </div>
   </nav>
+<!-- ✅ Toast container used by viewBasket() -->
+<div id="toastContainer" class="position-fixed top-0 end-0 m-3" style="z-index: 1055;"></div>
 
   <div class="row">
     <!-- Sidebar -->
@@ -82,20 +90,20 @@
                 <img [src]="'assets/' + product.name.split(' ').join('') + '.png'" [alt]="product.name" class="img-fluid" />
               </div>
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text text-muted small">{{ product.description }}</p>
-                <p class="fw-bold">${{ product.price.toFixed(2) }}</p>
-
+                <h5 class="card-title mb-1" style="font-size: 1.05rem; font-weight: 600;">{{ product.name }}</h5>
+                <p class="card-text text-muted mb-2" style="font-size: 0.95rem;">{{ product.description }}</p>
+                <p class="fw-semibold mb-2" style="font-size: 1rem;">${{ product.price.toFixed(2) }}</p>
+              
                 <p [ngClass]="{
                       'text-success': product.stock > 10,
                       'text-warning': product.stock > 0 && product.stock <= 10,
                       'text-danger': product.stock === 0
-                    }" class="small">
+                    }" style="font-size: 0.95rem;" class="mb-2">
                   {{ getStockLabel(product.stock) }}
                 </p>
-
+              
                 <p *ngIf="orderErrors[product.id]" class="text-danger small">{{ orderErrors[product.id] }}</p>
-
+              
                 <div class="d-flex align-items-center mb-2">
                   <label class="me-2 small">Quant:</label>
                   <button class="btn btn-outline-secondary btn-sm" (click)="decrementQuantity(product.id)" [disabled]="product.stock === 0">-</button>
@@ -106,13 +114,13 @@
                   <button class="btn btn-outline-secondary btn-sm" (click)="incrementQuantity(product.id, product.stock)"
                           [disabled]="product.stock === 0 || orderQuantities[product.id] >= product.stock">+</button>
                 </div>
-
+              
                 <button class="btn custom-green-btn mt-auto w-100"
                         (click)="addToCart(product.id)"
                         [disabled]="product.stock === 0 || orderErrors[product.id]">
                   Add to Cart
                 </button>
-              </div>
+              </div>            
             </div>
           </div>
         </div>
@@ -140,4 +148,49 @@
   <div class="text-center mt-4">
     <button class="btn btn-primary btn-lg" (click)="navigateToConfirmOrder()">Confirm Order</button>
   </div>
+  <div class="modal fade" id="basketModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Your Basket</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let product of products">
+                <tr *ngIf="orderQuantities[product.id] > 0">
+                  <td>{{ product.name }}</td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm"
+                           [(ngModel)]="orderQuantities[product.id]"
+                           (change)="updateTotal()" min="1"
+                           [max]="product.stock">
+                  </td>
+                  <td>${{ product.price.toFixed(2) }}</td>
+                  <td>${{ (product.price * orderQuantities[product.id]).toFixed(2) }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-danger"
+                            (click)="removeItem(product.id)">✖</button>
+                  </td>
+                </tr>
+              </ng-container>
+              
+            </tbody>
+          </table>
+          <p class="text-end fw-bold">Total: {{ total }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </div>

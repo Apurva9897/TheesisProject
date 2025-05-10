@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ReportsComponent implements OnInit {
   activeTab: string = 'supplier';
+  
   supplierOrders: any[] = [];
   suppliers: string[] = ['Tech Corp', 'Gadget Hub', 'NextGen Supplies'];
 
@@ -27,6 +28,7 @@ export class ReportsComponent implements OnInit {
 
 supplierOrderSearchId: string = '';
 searchedSupplierOrder: any = null;
+clientReportFetched: boolean = false;
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {}
@@ -88,6 +90,7 @@ searchedSupplierOrder: any = null;
   };
 
   fetchClientReports() {
+    this.clientReportFetched = true;
     const params: any = {};
     if (this.clientFilters.startDate) {
       const start = new Date(this.clientFilters.startDate);
@@ -112,6 +115,7 @@ searchedSupplierOrder: any = null;
   }
 
   exportClientCSV() {
+    console.log("Export triggered. Orders count:", this.clientOrders.length);
     if (this.clientOrders.length === 0) return;
 
     const header = ['Order ID', 'Customer Email', 'Order Date', 'Products Count', 'Total Amount', 'Status'];
@@ -120,7 +124,7 @@ searchedSupplierOrder: any = null;
       order.customer_email,
       order.order_date,
       order.products_count,
-      `£${order.total_amount.toFixed(2)}`,
+      `£${(order.total_amount || 0).toFixed(2)}`,
       order.status
     ]);
 

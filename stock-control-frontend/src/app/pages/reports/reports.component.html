@@ -13,7 +13,7 @@
       </li>
     </ul>
     
-    <!-- Action buttons -->
+ <!-- Action buttons -->
     <div class="d-flex gap-2 ms-3">
       <button *ngIf="activeTab === 'supplier'" class="btn btn-primary" (click)="fetchReports()">Generate Report</button>
       <button *ngIf="activeTab === 'supplier'" class="btn btn-outline-success" (click)="exportCSV()">Export Report</button>
@@ -21,6 +21,7 @@
       <button *ngIf="activeTab === 'client'" class="btn btn-outline-success" (click)="exportClientCSV()">Export Report</button>
     </div>
   </div>
+
 
   <!-- SUPPLIER ORDERS -->
   <div *ngIf="activeTab === 'supplier'" class="supplier-tab">
@@ -161,7 +162,7 @@
       </table>
     </div>
 
-    <div *ngIf="clientOrders.length === 0 && clientFilters.startDate && clientFilters.endDate" class="alert alert-warning mt-3">
+    <div *ngIf="clientOrders.length === 0 && clientReportFetched" class="alert alert-warning mt-3">
       No client records found for selected dates.
     </div>
   </div>

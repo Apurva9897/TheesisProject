@@ -118,49 +118,64 @@ def get_items_by_zone(zone_name):
 @admin_bp.route('/future_sales_prediction', methods=['GET'])
 def future_sales_prediction():
     try:
+        today = datetime.utcnow().date()
+        thirty_days_ago = today - timedelta(days=30)
+
         products = Product.query.all()
-        future_predictions = []
+        results = []
 
         for product in products:
-            # Fetch real order details for this product in the last 10 days
-            today = datetime.utcnow().date()
-            ten_days_ago = today - timedelta(days=9)
-
-            sales_per_day = { (today - timedelta(days=i)): 0 for i in range(10) }
-
-            # Join OrderDetails with Orders to get dates
-            order_details = (
-                db.session.query(OrderDetails, Order)
-                .join(Order, OrderDetails.order_id == Order.id)
+            # Step 1: Fetch order quantities in the past 30 days
+            order_data = (
+                db.session.query(Order.order_date, func.sum(OrderDetails.quantity).label("total_quantity"))
+                .join(Order, Order.id == OrderDetails.order_id)
                 .filter(OrderDetails.product_id == product.id)
-                .filter(Order.order_date >= ten_days_ago)
+                .filter(Order.order_date >= thirty_days_ago)
+                .group_by(Order.order_date)
                 .all()
             )
 
-            for detail, order in order_details:
-                order_date = order.order_date.date()
-                if order_date in sales_per_day:
-                    sales_per_day[order_date] += detail.quantity
+            # Step 2: Create a dictionary of {date: quantity}
+            daily_sales = {od.order_date.date(): od.total_quantity for od in order_data}
 
-            # Prepare X (days 1 to 10) and y (sales on each day)
-            X = np.array(range(1, 11)).reshape(-1, 1)
-            y = np.array(list(sales_per_day.values()))
+            # Step 3: Bucket into 4 weekly totals
+            weekly_sales = [0, 0, 0, 0]  # 4 weeks
+            for sale_date, qty in daily_sales.items():
+                week_index = (today - sale_date).days // 7
+                if 0 <= week_index < 4:
+                    weekly_sales[3 - week_index] += qty  # reverse so most recent week is last
 
-            # Train the Linear Regression model
-            model = LinearRegression()
-            model.fit(X, y)
+            # Step 4: Prepare training data
+            X = np.array([1, 2, 3, 4]).reshape(-1, 1)  # Week numbers
+            y = np.array(weekly_sales)
 
-            # Predict sales for day 11
-            next_day = np.array([[11]])
-            predicted_sales = int(model.predict(next_day)[0])
-            predicted_sales = max(0, predicted_sales)
+            # Avoid all-zeros training data
+            if np.all(y == 0):
+                predicted_sales = 0
+            else:
+                model = LinearRegression()
+                model.fit(X, y)
 
-            future_predictions.append({
+                # Step 5: Predict next 4 weeks and average
+                future_weeks = np.array([5, 6, 7, 8]).reshape(-1, 1)
+                predictions = model.predict(future_weeks)
+                predictions = [max(0, round(p)) for p in predictions]
+
+                predicted_sales = sum(predictions)  # total 30-day forecast
+
+            results.append({
                 "name": product.name,
                 "predicted_sales": predicted_sales
             })
 
-        return jsonify({"success": True, "future_predictions": future_predictions}), 200
+        return jsonify({
+            "success": True,
+            "future_predictions": results
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -223,45 +238,55 @@ def validate_shelf_capacity():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @admin_bp.route('/predict_sales_by_product', methods=['POST'])
-#@login_required
 def predict_sales_by_product():
     try:
         data = request.get_json()
         product_name = data.get('product_name')
+
         if not product_name:
             return jsonify({"success": False, "message": "Product name missing"}), 400
 
-        today = datetime.utcnow().date()
-        fifteen_days_ago = today - timedelta(days=14)
+        # Step 1: Get product ID
+        product = Product.query.filter(Product.name.ilike(product_name)).first()
+        if not product:
+            return jsonify({"success": False, "message": "Product not found"}), 404
 
-        # Get past 15 days of sales for the product
+        product_id = product.id
+
+        today = datetime.utcnow().date()
+        thirty_days_ago = today - timedelta(days=29)
+
+        # Step 2: Get all orders in past 30 days (regardless of status)
         order_details = (
             db.session.query(OrderDetails, Order)
             .join(Order, OrderDetails.order_id == Order.id)
-            .join(Product, Product.id == OrderDetails.product_id)
-            .filter(Product.name == product_name)
-            .filter(Order.order_date >= fifteen_days_ago)
+            .filter(OrderDetails.product_id == product_id)
+            .filter(Order.order_date >= thirty_days_ago)
             .all()
         )
 
-        sales_per_day = { (today - timedelta(days=i)): 0 for i in range(15) }
+        # Step 3: Build sales per day dictionary
+        sales_per_day = { (today - timedelta(days=i)): 0 for i in range(30) }
 
         for detail, order in order_details:
             order_date = order.order_date.date()
             if order_date in sales_per_day:
                 sales_per_day[order_date] += detail.quantity
 
-        # Prepare X and y
-        X = np.array(range(1, 16)).reshape(-1, 1)
+        # Step 4: Prepare training data
+        X = np.array(range(1, 31)).reshape(-1, 1)
         y = np.array(list(sales_per_day.values()))
 
-        model = LinearRegression()
-        model.fit(X, y)
+        # Edge case: all values are zero, skip training
+        if all(qty == 0 for qty in y):
+            predictions = [0 for _ in range(30)]
+        else:
+            model = LinearRegression()
+            model.fit(X, y)
 
-        # Predict next 90 days
-        future_days = np.array(range(16, 46)).reshape(-1, 1)
-        predictions = model.predict(future_days)
-        predictions = [max(0, int(round(p))) for p in predictions]
+            future_days = np.array(range(31, 61)).reshape(-1, 1)  # Next 30 days
+            predictions = model.predict(future_days)
+            predictions = [max(0, int(round(p))) for p in predictions]
 
         future_sales = [{"day": i + 1, "quantity": qty} for i, qty in enumerate(predictions)]
 

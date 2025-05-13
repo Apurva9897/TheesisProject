@@ -9,7 +9,7 @@ from flask import request
 from models import SupplierOrder, SupplierOrderDetails
 from models import Supplier
 from datetime import datetime, timedelta
-from pytz import timezone  
+from datetime import datetime, timezone
 from sqlalchemy import and_
 from models import Shelf
 from models import User
@@ -32,7 +32,7 @@ def get_admin_dashboard_data():
         total_inventory = db.session.query(func.sum(Product.stock)).scalar() or 0
 
         # 2. Pending Orders
-        pending_orders = db.session.query(Order).filter(Order.status == 'Pending').count()
+        pending_orders = db.session.query(Order).filter(Order.status != 'Delivered').count()
 
         # 3. Low Stock Alerts (Products with stock <= 5)
         low_stock_products = Product.query.filter(Product.stock <= 10).all()
@@ -118,7 +118,7 @@ def get_items_by_zone(zone_name):
 @admin_bp.route('/future_sales_prediction', methods=['GET'])
 def future_sales_prediction():
     try:
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         thirty_days_ago = today - timedelta(days=30)
 
         products = Product.query.all()
@@ -253,7 +253,7 @@ def predict_sales_by_product():
 
         product_id = product.id
 
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         thirty_days_ago = today - timedelta(days=29)
 
         # Step 2: Get all orders in past 30 days (regardless of status)
@@ -483,7 +483,7 @@ def trigger_update_order_status():
         orders = Order.query.all()
         updated_count = 0
 
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
 
         for order in orders:
             order_date = order.order_date.date()

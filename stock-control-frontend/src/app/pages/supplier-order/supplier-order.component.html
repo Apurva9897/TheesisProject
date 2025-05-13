@@ -57,10 +57,24 @@
   </div>
 
   <div class="order-summary" *ngIf="products.length > 0">
-    <p><strong>Total Items:</strong> {{ orderSummary.totalItems }}</p>
-    <p><strong>Total Quantity:</strong> {{ orderSummary.totalQuantity }}</p>
-    <button class="btn btn-primary" (click)="submitAllOrders()">Submit All Orders</button>
+  <p><strong>Total Items:</strong> {{ orderSummary.totalItems }}</p>
+  <p><strong>Total Quantity:</strong> {{ orderSummary.totalQuantity }}</p>
+
+  <div *ngIf="orderSummary.totalItems > 0">
+    <p><strong>Products Added:</strong></p>
+    <ul class="mb-3">
+      <li *ngFor="let entry of addedMap.entries()">
+        {{ entry[1] }} × {{ entry[0] }}
+      </li>
+    </ul>
   </div>
+
+  <button class="btn btn-primary" 
+          (click)="submitAllOrders()" 
+          [disabled]="orderSummary.totalItems === 0 || orderSummary.totalQuantity === 0">
+    Submit All Orders
+  </button>
+</div>
 
   <!-- Toast Container -->
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">

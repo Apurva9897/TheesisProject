@@ -24,6 +24,8 @@ interface Product {
 export class ClientDashboardComponent implements OnInit {
   selectedItems: any[] = [];
   total: number = 0;
+  totalQuantity: number = 0; // for navbar
+  totalPrice: number = 0;    // for modal
   activeTab = 'dashboard';
   selectedBestSeller: string = '';
   selectedStock: string = '';
@@ -166,7 +168,8 @@ setTimeout(() => {
 }, 3000);
   
     // ✅ Increment cart item count
-    this.total += quantity;
+    this.totalQuantity += quantity;
+this.updateTotalPrice();
     
   }
 
@@ -239,25 +242,31 @@ viewBasket(): void {
     : `🛒 <strong>Your Basket is empty.</strong>`;
 
   this.showToast = true;
-
+  
   setTimeout(() => {
     this.showToast = false;
   }, 4000);
 
+  this.updateTotalPrice();
   const modal = new (window as any).bootstrap.Modal(document.getElementById('basketModal'));
   modal.show();
 }
 
 removeItem(productId: number): void {
   this.orderQuantities[productId] = 0;
-  this.updateTotal();
+this.updateTotalPrice();
+this.updateTotalQuantity();
 }
 
-updateTotal(): void {
-  this.total = this.products.reduce((sum, product) => {
+updateTotalPrice(): void {
+  this.totalPrice  = this.products.reduce((sum, product) => {
     const quantity = this.orderQuantities[product.id] || 0;
     return sum + quantity * product.price;
   }, 0);
 }
-  
+  updateTotalQuantity(): void {
+  this.totalQuantity = this.products.reduce((sum, product) => {
+    return sum + (this.orderQuantities[product.id] || 0);
+  }, 0);
+}
 }

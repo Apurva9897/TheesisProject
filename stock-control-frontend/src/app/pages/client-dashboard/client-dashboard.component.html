@@ -33,7 +33,7 @@
         </ul>
       </div>
       <a (click)="viewBasket()" class="text-decoration-none" style="cursor: pointer;">View Basket</a>
-      <span class="fw-semibold">Total: <span class="badge bg-success">{{ total }}</span></span>
+      <span class="fw-semibold">Total: <span class="badge bg-success">{{ totalQuantity  }}</span></span>
     </div>
   </nav>
 <!-- ✅ Toast container used by viewBasket() -->
@@ -152,7 +152,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Your Basket</h5>
+          <h3 class="modal-title">Your Basket</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -173,7 +173,7 @@
                   <td>
                     <input type="number" class="form-control form-control-sm"
                            [(ngModel)]="orderQuantities[product.id]"
-                           (change)="updateTotal()" min="1"
+                           (change)="updateTotalPrice()" min="1"
                            [max]="product.stock">
                   </td>
                   <td>${{ product.price.toFixed(2) }}</td>
@@ -187,7 +187,7 @@
               
             </tbody>
           </table>
-          <p class="text-end fw-bold">Total: {{ total }}</p>
+          <p class="text-end fw-bold">Total: {{ totalPrice.toFixed(2) }}</p>
         </div>
       </div>
     </div>

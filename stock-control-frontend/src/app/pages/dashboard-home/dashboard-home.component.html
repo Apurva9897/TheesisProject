@@ -72,9 +72,22 @@
       </apx-chart>
     </div>
   </div>
+  <div class="chart-card" *ngIf="profitTrendSeries.length">
+  <h3>Profit Trend (Last 10 Days)</h3>
+  <apx-chart
+    [series]="profitTrendSeries"
+    [chart]="profitTrendChartOptions.chart"
+    [xaxis]="profitTrendChartOptions.xaxis"
+    [colors]="profitTrendChartOptions.colors"
+    [stroke]="profitTrendChartOptions.stroke"
+    [yaxis]="profitTrendChartOptions.yaxis"
+    [dataLabels]="profitTrendChartOptions.dataLabels"
+    [title]="profitTrendChartOptions.title">
+  </apx-chart>
+</div>
     <!-- Future Prediction Chart -->
     <div class="chart-card">
-      <h3>Predicted Future Sales (Next 15 Days)</h3>
+      <h3>Predicted Future Sales (Next 30 Days)</h3>
       <apx-chart 
         [series]="futurePredictionSeries"
         [chart]="futurePredictionChartOptions.chart"
@@ -106,7 +119,7 @@
           </button>
         </div>
       </div>
-      
+
       <!-- Chart -->
       <apx-chart
         *ngIf="futureSalesByProductSeries.length"

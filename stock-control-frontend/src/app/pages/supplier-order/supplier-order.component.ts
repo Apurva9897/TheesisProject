@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 declare var bootstrap: any;
 
 @Component({
@@ -22,7 +23,7 @@ export class SupplierOrderComponent {
   addedMap = new Map<string, number>();
   selectedOrderDate: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngAfterViewInit() {
     const toastEl = document.getElementById('limitToast');
@@ -123,28 +124,40 @@ export class SupplierOrderComponent {
     };
   
     this.http.post('http://127.0.0.1:5000/admin/submit_supplier_orders', payload, { withCredentials: true })
-      .subscribe({
-        next: (res: any) => {
-          if (res.success) {
-            alert('✅ Supplier Order Submitted!');
-            // Clear selections and messages
-            this.products.forEach(p => {
-              p.added_quantity = 0;
-              p.quantity_to_order = 0;
-              p.addDisabled = false;
-            });
-            this.addedMap.clear();
-            this.refreshAddedMessages();
-            this.updateOrderSummary();
-          } else {
-            alert('❌ Submission failed: ' + res.message);
+  .subscribe({
+    next: (res: any) => {
+      if (res.success) {
+        // ✅ Navigate to summary with state
+        this.router.navigate(['/admin-dashboard/supplier-summary'], {
+          state: {
+            supplier_name: this.selectedSupplier,
+            order_date: new Date().toLocaleString(),
+            items: payload.items,
+            total_quantity: this.orderSummary.totalQuantity,
+            total_items: this.orderSummary.totalItems,
+            total_cost: payload.items.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0)
           }
-        },
-        error: (err) => {
-          console.error('❌ API Error:', err);
-          alert('❌ Error submitting order');
-        }
-      });
+        });
+
+        // ✅ Reset local data
+        this.products.forEach(p => {
+          p.added_quantity = 0;
+          p.quantity_to_order = 0;
+          p.addDisabled = false;
+        });
+        this.addedMap.clear();
+        this.refreshAddedMessages();
+        this.updateOrderSummary();
+      } else {
+        alert('❌ Submission failed: ' + res.message);
+      }
+    },
+    error: (err) => {
+      console.error('❌ API Error:', err);
+      alert('❌ Error submitting order');
+    }
+  });
+
   }
   
   dismissMessage(index: number) {

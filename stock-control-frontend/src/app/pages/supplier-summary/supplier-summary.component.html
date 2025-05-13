@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <div class="alert alert-success text-center" role="alert">
+    ✅ Supplier Order Successfully Submitted!
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title mb-3">Order Summary</h4>
+      <p><strong>Supplier:</strong> {{ supplierName }}</p>
+      <p><strong>Order Date:</strong> {{ orderDate }}</p>
+      <p><strong>Total Items:</strong> {{ totalItems }}</p>
+      <p><strong>Total Quantity:</strong> {{ totalQuantity }}</p>
+      <p><strong>Total Cost:</strong> £{{ totalCost.toFixed(2) }}</p>
+
+      <hr>
+
+      <h4>Ordered Products</h4>
+      <table class="table table-bordered mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>Product</th>
+            <th>Zone</th>
+            <th>Shelf</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.zone }}</td>
+            <td>{{ item.shelf }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>£{{ item.unit_price.toFixed(2) }}</td>
+            <td>£{{ (item.quantity * item.unit_price).toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './dashboard-home.component.css'
 })
 export class DashboardHomeComponent implements OnInit {
-
+  
   totalInventory: number = 0;
   pendingOrders: number = 0;
   lowStockList: any[] = [];
@@ -82,7 +82,7 @@ this.topSoldChartOptions = {
   colors: ['#FFB6C1'],
   xaxis: {
     categories: response.top_sold.map((p: any) => p.name),
-    labels: { rotate: -60, style: { fontSize: '12px' } }
+    labels: { rotate: 0, style: { fontSize: '12px' } }
   },
   dataLabels: { enabled: true }
 };
@@ -115,11 +115,31 @@ this.leastSoldChartOptions = {
 
             this.profitTrendSeries = [{ name: 'Profit', data: response.profit_trend.map((p: any) => p.profit) }];
             this.profitTrendChartOptions = {
-              chart: { type: 'line', height: 300 },
-              colors: ['#4CAF50'],
-              xaxis: { categories: response.profit_trend.map((p: any) => p.date) },
-              dataLabels: { enabled: false }
-            };
+  chart: { type: 'line', height: 300 },
+  stroke: {
+    curve: 'stepline'   // 🆕 Use stepline curve
+  },
+  colors: ['#4CAF50'],
+  xaxis: {
+    categories: response.profit_trend.map((p: any) => p.date)
+  },
+  dataLabels: { enabled: false },
+  title: {
+    text: 'Profit Trend (Last 10 Days)',
+    align: 'center',
+    style: { fontSize: '16px', fontWeight: 'bold' }
+  },
+  markers: {
+    hover: {
+      sizeOffset: 4
+    }
+  }
+};
+// ✅ Set the series after options
+this.profitTrendSeries = [{
+  name: 'Profit',
+  data: response.profit_trend.map((p: any) => p.profit)
+}];
           }
         },
         error: (error) => {
@@ -143,33 +163,41 @@ this.leastSoldChartOptions = {
               ];
     
               this.futurePredictionChartOptions = {
-                chart: {
-                  type: 'line',
-                  height: 300,
-                  animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 900,
-                    animateGradually: { enabled: true, delay: 100 },
-                    dynamicAnimation: { enabled: true, speed: 350 }
-                  },
-                  toolbar: { show: true }
-                },
-                stroke: { curve: 'smooth' },
-                colors: ['#2196F3'],
-                xaxis: { 
-                  type: 'category',
-                  title: { text: 'Products' }
-                },
-                yaxis: { title: { text: 'Predicted Sales' } },
-                dataLabels: { enabled: true },
-                markers: { size: 6, hover: { size: 8 } },
-                title: {
-                  text: 'Predicted Sales (Linear Regression Model)',
-                  align: 'center',
-                  style: { fontSize: '18px', fontWeight: 'bold' }
-                }
-              };
+  chart: {
+    type: 'area',
+    height: 300,
+    toolbar: { show: true }
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 2
+  },
+  fill: {
+    type: "gradient",
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.4,
+      opacityTo: 0.05,
+      stops: [0, 90, 100]
+    }
+  },
+  colors: ['#42a5f5'],
+  xaxis: {
+    type: 'category',
+    title: { text: 'Products' }
+  },
+  yaxis: {
+    title: { text: 'Predicted Sales' }
+  },
+  dataLabels: { enabled: true },
+  markers: { size: 5 },
+  title: {
+    text: 'Predicted Sales (Gradient Area Chart)',
+    align: 'center',
+    style: { fontSize: '18px', fontWeight: 'bold' }
+  }
+};
+
             }
           },
           error: (error) => {

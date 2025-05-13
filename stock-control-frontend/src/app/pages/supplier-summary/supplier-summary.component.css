@@ -1,0 +1,11 @@
+.container {
+  max-width: 900px;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.alert {
+  font-size: 1.1rem;
+}

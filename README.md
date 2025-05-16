@@ -9,8 +9,13 @@
 ### Project description: 
 
 The Stock Control System is a web-based application designed to manage and monitor stock levels of computer components in a computer warehouse. It ensures real-time inventory tracking, optimizes the stock assembly process, and enhances operational efficiency by providing accurate reporting and invoicing features. The system helps warehouse managers prevent stock shortages, reduce excess inventory, and improve overall productivity.
-A key feature of this system is location tracking, which allows precise identification of where each item is stored or moved during stock assembly. Additionally, the system integrates computer services, including computer maintenance, system design, software development, software installation, and disaster recovery services, making it a comprehensive solution for IT asset management.
+
+A key feature of this system is location tracking, which allows precise identification of where each item is stored or moved during stock assembly. Products are segregated zone-wise and shelf-wise within the warehouse for efficient management and retrieval. The system also provides low stock alerts to the admin both on the dashboard as soon as they log in and via automated email notifications to ensure timely restocking.
+
+To ensure the authenticity of user-provided email addresses, the system implements email verification using SMTP, which sends a One-Time Password (OTP) during registration. This validation prevents fake email usage, especially since email receipts are automatically sent to users upon purchasing products.
+
 The application supports user roles and access control, ensuring secure handling of stock information. With automated alerts, reporting tools, and invoicing capabilities, the system helps businesses maintain financial records and optimize inventory operations. It also provides graphical insights into stock trends, supports multi-user access, and enables cloud-based deployment for scalability.
+
 By implementing the Stock Control System, businesses can streamline inventory processes, enhance stock visibility, and ensure accurate record-keeping, ultimately improving warehouse efficiency and reducing operational risks.
 
 

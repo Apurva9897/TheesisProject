@@ -221,7 +221,7 @@ Import .sql files from /db/ in correct order
 
 Use predefined admin email: apu1098avk@gmail.com (Password: Ujwala25)
 
-To test OTP and receipt: register as a client (vivek@gmail.com / vivek) 
+To test OTP and receipt: register as a client (vivek@gmail.com / vivek)  enter a valid email address verify otp while registration and on click of payNow event on customer dashboard validated email address will receive a receipt of purchase
 
 To test admin approval: register a new admin account (approval goes to apu1098avk@gmail.com)
 

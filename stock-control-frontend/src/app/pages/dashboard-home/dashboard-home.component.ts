@@ -82,7 +82,9 @@ this.topSoldChartOptions = {
   colors: ['#FFB6C1'],
   xaxis: {
     categories: response.top_sold.map((p: any) => p.name),
-    labels: { rotate: 0, style: { fontSize: '12px' } }
+    labels: { rotate: -45, 
+  trim: true,
+  style: { fontSize: '10px' }  }
   },
   dataLabels: { enabled: true }
 };
@@ -107,7 +109,9 @@ this.leastSoldChartOptions = {
   colors: ['#DDA0DD'],
   xaxis: {
     categories: response.least_sold.map((p: any) => p.name),
-    labels: { rotate: -60, style: { fontSize: '12px' } }
+    labels: {rotate: -45, 
+  trim: true,
+  style: { fontSize: '10px' }  }
   },
   dataLabels: { enabled: true }
 };
